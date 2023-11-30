@@ -50,54 +50,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import rk.first.saathi.R
 import rk.first.saathi.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(){
-    var presses by remember { mutableIntStateOf(0) }
-
+fun MainScreen(navController: NavController){
     Scaffold(
         bottomBar = {
-            BottomAppBar(
-                containerColor = Color(0xFFC3B36F),
-                contentColor = Color(0xFFFEE990),
-            ) {
-                Column (
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Button(
-                        colors = ButtonDefaults.buttonColors(Color(0xFFFEE990)),
-                        modifier = Modifier
-                            .wrapContentSize(),
-                        onClick = {}
-                    ) {
-                            Text(
-                                text = "Welcome",
-                                color = Color(0xFF2B0E48),
-                                fontSize = 19.sp,
-                                fontWeight = FontWeight.Bold
-                                )
-                    }
-                }
-            }
+            Footer()
         },
         floatingActionButton = {
-            LargeFloatingActionButton(
-                containerColor = Color(0xFF2B0E48),
-                contentColor = Color(0xFFFEE990),
-                onClick = { presses++ },
-                shape = CircleShape
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.questionmark),
-                    contentDescription = "Help",
-                    modifier = Modifier.height(50.dp))
-
-            }
+            Help()
         }
     ) { innerPadding ->
         Column(
@@ -107,87 +72,146 @@ fun MainScreen(){
                 .background(Color(0xFFFEE990)),
         )
         {
+            Header()
+            Display(navController)
+            myButtons()
+        }
+    }
+}
 
-            val gradient = Brush.linearGradient(
-                listOf(Color(0XFFFEE990),Color(0xFFF2D660))
-                )
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .height(74.dp)
-                .background(gradient))
+@Composable
+fun Header(){
+    val gradient = Brush.linearGradient(
+        listOf(Color(0XFFFEE990),Color(0xFFF2D660))
+    )
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(74.dp)
+        .background(gradient))
+}
 
-            Column(
+@Composable
+fun myButtons(){
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 20.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom
+    )
+    {
+        LargeFloatingActionButton(
+            onClick = {},
+            shape = CircleShape,
+            containerColor = Color.White,
+        ) {
+            Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
+                , modifier = Modifier.height(50.dp))
+        }
+    }
+}
+
+@Composable
+fun Footer(){
+    BottomAppBar(
+        containerColor = Color(0xFFC3B36F),
+        contentColor = Color(0xFFFEE990),
+    ) {
+        Column (
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Button(
+                colors = ButtonDefaults.buttonColors(Color(0xFFFEE990)),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 60.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .wrapContentSize(),
+                onClick = {}
+            ) {
+                Text(
+                    text = "Welcome",
+                    color = Color(0xFF2B0E48),
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold
                 )
-            {
-
-                Image(
-                    painter = painterResource(id = R.drawable.file),
-                    contentDescription = "Saathi Logo",
-                    modifier = Modifier
-                        .height(256.dp)
-                        .width(311.dp)
-                )
-
-                Button(
-                    colors = ButtonDefaults.buttonColors(Color.White),
-                    modifier = Modifier
-                        .width(193.dp)
-                        .height(60.dp),
-                    onClick = {}
-                ) {
-                    Text(
-                        text = "Login",
-                        style = TextStyle(
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight(700),
-                            color = Color(0xFF2B0E48),
-                            textAlign = TextAlign.Center,
-                        )
-                    )
-                }
-
-                Button(
-                    colors = ButtonDefaults.buttonColors(Color.White),
-                    modifier = Modifier
-                        .padding(top = 20.dp)
-                        .width(281.dp)
-                        .height(60.dp),
-                    onClick = {}
-                ) {
-                    Text(
-                        text = "Register",
-                        style = TextStyle(
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight(700),
-                            color = Color(0xFF2B0E48),
-                            textAlign = TextAlign.Center,
-                        )
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 20.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.Bottom
-            )
-            {
-                LargeFloatingActionButton(
-                    onClick = {},
-                    shape = CircleShape,
-                    containerColor = Color.White,
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
-                        , modifier = Modifier.height(50.dp))
-                }
             }
         }
     }
 }
+
+
+@Composable
+fun Display(navController:NavController){
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 60.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
+    {
+
+        Image(
+            painter = painterResource(id = R.drawable.file),
+            contentDescription = "Saathi Logo",
+            modifier = Modifier
+                .height(256.dp)
+                .width(311.dp)
+        )
+
+        Button(
+            colors = ButtonDefaults.buttonColors(Color.White),
+            modifier = Modifier
+                .width(193.dp)
+                .height(60.dp),
+            onClick = {navController.navigate(Screen.Home.route)}
+        ) {
+            Text(
+                text = "Login",
+                style = TextStyle(
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight(700),
+                    color = Color(0xFF2B0E48),
+                    textAlign = TextAlign.Center,
+                )
+            )
+        }
+
+        Button(
+            colors = ButtonDefaults.buttonColors(Color.White),
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .width(281.dp)
+                .height(60.dp),
+            onClick = {}
+        ) {
+            Text(
+                text = "Register",
+                style = TextStyle(
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight(700),
+                    color = Color(0xFF2B0E48),
+                    textAlign = TextAlign.Center,
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun Help(){
+    var presses by remember {mutableIntStateOf(0)}
+    LargeFloatingActionButton(
+        containerColor = Color(0xFF2B0E48),
+        contentColor = Color(0xFFFEE990),
+        onClick = { presses++ },
+        shape = CircleShape
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.questionmark),
+            contentDescription = "Help",
+            modifier = Modifier.height(50.dp))
+
+    }
+}
+
