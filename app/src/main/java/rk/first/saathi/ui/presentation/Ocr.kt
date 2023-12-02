@@ -1,6 +1,7 @@
 package rk.first.saathi.ui.presentation
 
 import android.content.Context
+import android.util.Log
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.Image
@@ -24,9 +25,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -35,12 +39,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
+import kotlinx.coroutines.flow.MutableStateFlow
 import rk.first.saathi.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Ocr(navController: NavController) {
+fun Ocr(navController: NavController,state:State,viewModel: SaathiViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -64,20 +72,51 @@ fun Ocr(navController: NavController) {
                 .background(Color(0xFFFEE990)),
         )
         {
-            Header()
-            OcrDisplay(isPressed,navController,interactionSource)
+            OcrDisplay(isPressed,navController,interactionSource,state, viewModel = viewModel)
         }
     }
 }
 
 @Composable
-fun OcrDisplay(isPressed: Boolean,navController: NavController,interactionSource: MutableInteractionSource){
+fun OcrDisplay(isPressed: Boolean,navController: NavController,interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel){
+
     val context = LocalContext.current
+
+    var textread by remember {
+        mutableStateOf("R")
+    }
+
+    val analyzer = remember {
+        OcrImageAnalyzer(
+            viewModel = viewModel,
+            state = state,
+            onResults = {
+                textread = it
+            }
+        )
+    }
+
     val controller = remember {
         LifecycleCameraController(context).apply {
-            setEnabledUseCases(CameraController.IMAGE_CAPTURE or
-                CameraController.IMAGE_ANALYSIS)
+            setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
+            setImageAnalysisAnalyzer(
+                ContextCompat.getMainExecutor(context),
+                analyzer
+            )
         }
+    }
+
+    val gradient = Brush.linearGradient(
+        listOf(Color(0XFFFEE990),Color(0xFFF2D660))
+    )
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(74.dp)
+        .background(gradient))
+        {
+            Log.d("TextRead",state.text)
+        Text(text = state.text,
+            modifier = Modifier.align(Alignment.Center))
     }
 
     Box(
@@ -87,7 +126,7 @@ fun OcrDisplay(isPressed: Boolean,navController: NavController,interactionSource
     {
         CameraPreview(controller =controller,
             modifier = Modifier.fillMaxSize()
-            )
+            ,context = context)
 
         Row(
             modifier = Modifier
