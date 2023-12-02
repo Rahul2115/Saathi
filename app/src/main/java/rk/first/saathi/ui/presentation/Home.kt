@@ -54,14 +54,18 @@ import rk.first.saathi.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home() {
-
+fun Home(navController: NavController) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
     Scaffold(
         bottomBar = {
-            HomeFooter()
+            val itemslist = listOf(
+                BottomNavItem.OCR,
+                BottomNavItem.Home,
+                BottomNavItem.OBJECT,
+            )
+            HomeFooter(itemslist = itemslist,navController = navController)
         },
         floatingActionButton = {
             HomeHelp()
@@ -75,7 +79,7 @@ fun Home() {
         )
         {
             Header()
-            HomeDisplay(isPressed)
+            HomeDisplay(isPressed,navController)
             HomeButtons(isPressed,interactionSource)
         }
     }
@@ -116,20 +120,15 @@ fun HomeButtons(isPressed:Boolean,interactionSource:MutableInteractionSource){
 }
 
 @Composable
-fun BottomNavigation() {
-    val itemslist = listOf(
-        BottomNavItem.OCR,
-        BottomNavItem.Home,
-        BottomNavItem.OBJECT,
-    )
-
+fun BottomNavigation(itemslist:List<BottomNavItem>,navController: NavController) {
     NavigationBar(
         containerColor = Color(0xFFC3B36F),
         contentColor = Color(0xFFFEE990)
     ){
         itemslist.forEach { item ->
             AddItem(
-                screen = item
+                screen = item,
+                navController = navController
             )
         }
     }
@@ -149,6 +148,7 @@ fun BottomNavigation() {
 
 @Composable
 fun RowScope.AddItem(
+    navController: NavController,
     screen: BottomNavItem
 ) {
     NavigationBarItem(
@@ -163,10 +163,12 @@ fun RowScope.AddItem(
         },
 
         // Display if the icon it is select or not
-        selected = (screen.title == "Home"),
+        selected = (screen.title.lowercase() == navController.currentDestination?.route?.lowercase()),
 
         // Click listener for the icon
-        onClick = { /*TODO*/ },
+        onClick = {
+            if(screen.title.lowercase() != navController.currentDestination?.route?.lowercase() ){navController.navigate(screen.title.lowercase())}
+                  },
 
         // Control all the colors of the icon
         colors = NavigationBarItemDefaults.colors(indicatorColor = Color(0xFFFEE990))
@@ -174,12 +176,12 @@ fun RowScope.AddItem(
 }
 
 @Composable
-fun HomeFooter(){
+fun HomeFooter(itemslist:List<BottomNavItem>,navController: NavController){
     BottomAppBar(
         containerColor = Color(0xFFC3B36F),
         contentColor = Color(0xFFFEE990),
     ) {
-        BottomNavigation()
+        BottomNavigation(itemslist = itemslist, navController = navController)
     }
 }
 
@@ -196,12 +198,11 @@ fun HomeHelp(){
             painter = painterResource(id = R.drawable.questionmark),
             contentDescription = "Help",
             modifier = Modifier.height(50.dp))
-
     }
 }
 
 @Composable
-fun HomeDisplay(isPressed: Boolean){
+fun HomeDisplay(isPressed: Boolean,navController: NavController){
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -220,7 +221,7 @@ fun HomeDisplay(isPressed: Boolean){
 
         if(isPressed){
             Text(
-                text = "Saathi is listening...",
+                text = "Saathi is listening... ${navController.currentDestination?.route}",
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight(400),
