@@ -19,8 +19,8 @@ sealed class BottomNavItem(
             "OBJECT",
         )
 
-    object Profile :
+    object LLM :
         BottomNavItem(
-            "Profile",
+            "LLM",
         )
 }
