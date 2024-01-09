@@ -13,13 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
@@ -38,34 +33,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import rk.first.saathi.R
-import rk.first.saathi.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(navController: NavController) {
+fun Home(navController: NavController,viewModel: SaathiViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
     Scaffold(
         bottomBar = {
-            val itemslist = listOf(
+            val itemList = listOf(
                 BottomNavItem.OCR,
                 BottomNavItem.Home,
                 BottomNavItem.OBJECT,
             )
-            HomeFooter(itemslist = itemslist,navController = navController)
+            HomeFooter(itemslist = itemList,navController = navController)
         },
         floatingActionButton = {
             HomeHelp()
@@ -79,14 +67,14 @@ fun Home(navController: NavController) {
         )
         {
             Header()
-            HomeDisplay(isPressed,navController)
-            HomeButtons(isPressed,interactionSource)
+            HomeDisplay(isPressed,viewModel)
+            HomeButtons(interactionSource)
         }
     }
 }
 
 @Composable
-fun HomeButtons(isPressed:Boolean,interactionSource:MutableInteractionSource){
+fun HomeButtons(interactionSource:MutableInteractionSource){
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -120,12 +108,12 @@ fun HomeButtons(isPressed:Boolean,interactionSource:MutableInteractionSource){
 }
 
 @Composable
-fun BottomNavigation(itemslist:List<BottomNavItem>,navController: NavController) {
+fun BottomNavigation(itemList:List<BottomNavItem>,navController: NavController) {
     NavigationBar(
         containerColor = Color(0xFFC3B36F),
         contentColor = Color(0xFFFEE990)
     ){
-        itemslist.forEach { item ->
+        itemList.forEach { item ->
             AddItem(
                 screen = item,
                 navController = navController
@@ -181,7 +169,7 @@ fun HomeFooter(itemslist:List<BottomNavItem>,navController: NavController){
         containerColor = Color(0xFFC3B36F),
         contentColor = Color(0xFFFEE990),
     ) {
-        BottomNavigation(itemslist = itemslist, navController = navController)
+        BottomNavigation(itemList = itemslist, navController = navController)
     }
 }
 
@@ -202,7 +190,7 @@ fun HomeHelp(){
 }
 
 @Composable
-fun HomeDisplay(isPressed: Boolean,navController: NavController){
+fun HomeDisplay(isPressed: Boolean,viewModel: SaathiViewModel){
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -220,8 +208,9 @@ fun HomeDisplay(isPressed: Boolean,navController: NavController){
         )
 
         if(isPressed){
+            viewModel.speak("Saathi is listening")
             Text(
-                text = "Saathi is listening... ${navController.currentDestination?.route}",
+                text = "Saathi is listening...",
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight(400),

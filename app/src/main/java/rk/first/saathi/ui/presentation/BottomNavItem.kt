@@ -3,23 +3,23 @@ package rk.first.saathi.ui.presentation
 sealed class BottomNavItem(
     var title: String,
 ) {
-    object Home :
+    data object Home :
         BottomNavItem(
             "Home",
 
             )
 
-    object OCR :
+    data object OCR :
         BottomNavItem(
             "OCR",
         )
 
-    object OBJECT :
+    data object OBJECT :
         BottomNavItem(
             "OBJECT",
         )
 
-    object LLM :
+    data object LLM :
         BottomNavItem(
             "LLM",
         )

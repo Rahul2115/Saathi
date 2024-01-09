@@ -1,7 +1,8 @@
 package rk.first.saathi
 
 sealed class Screen(val route:String){
-    object MainScreen: Screen("mainScreen")
-    object Home: Screen("home")
-    object Ocr: Screen("ocr")
+    data object MainScreen: Screen("mainScreen")
+    data object Home: Screen("home")
+    data object Ocr: Screen("ocr")
+    data object LLM: Screen("llm")
 }

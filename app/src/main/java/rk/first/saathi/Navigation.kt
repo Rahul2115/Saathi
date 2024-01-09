@@ -1,16 +1,13 @@
 package rk.first.saathi
 
-
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import rk.first.saathi.ui.presentation.Home
+import rk.first.saathi.ui.presentation.LLM
 import rk.first.saathi.ui.presentation.MainScreen
 import rk.first.saathi.ui.presentation.Ocr
 import rk.first.saathi.ui.presentation.SaathiViewModel
@@ -27,10 +24,14 @@ fun Navigation(viewModel: SaathiViewModel) {
                 MainScreen(navController=navController)
         }
         composable(route = Screen.Home.route){
-                Home(navController=navController)
+                Home(navController=navController,viewModel)
         }
         composable(route = Screen.Ocr.route){
                 Ocr(navController=navController,uiState,viewModel)
         }
+        composable(route = Screen.LLM.route){
+                LLM(navController=navController,uiState,viewModel)
+        }
+
     }
 }
