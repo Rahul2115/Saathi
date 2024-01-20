@@ -9,6 +9,7 @@ import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -72,38 +73,51 @@ class SaathiViewModel @Inject constructor(
                 Log.d("Voice Input", "In result")
                 bundle?.let {
                     val result = it.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                    result?.get(0)?.let {
-                            it1 -> Log.d("Voice Input", it1)
+                    result?.get(0)?.let { it1 ->
+                        Log.d("Voice Input", it1)
                         Toast.makeText(app, it1, Toast.LENGTH_SHORT).show()
 
-                        val model = GenerativeModel(
-                            // Use a model that's applicable for your use case (see "Implement basic use cases" below)
-                            modelName = "gemini-pro",
-                            // Access your API key as a Build Configuration variable (see "Set up your API key" above)
-                            apiKey = "AIzaSyD6mf_Sf8XwWR_PxY_WTdcHuNnOhblbc3g"
-                        )
+                        if (it1.toLowerCase() == "stop") {
+                            if(tts.isSpeaking)
+                            {
+                                tts.stop()
+                            }
+                            else
+                            {
 
-                        val prompt = it1
+                            }
 
-                        viewModelScope.launch {
-                            val response = model.generateContent(prompt)
-                            Log.d("Output",response.text.toString())
-                            speak(response.text.toString())
+                        } else {
+
+                            val model = GenerativeModel(
+                                // Use a model that's applicable for your use case (see "Implement basic use cases" below)
+                                modelName = "gemini-pro",
+                                // Access your API key as a Build Configuration variable (see "Set up your API key" above)
+                                apiKey = "AIzaSyD6mf_Sf8XwWR_PxY_WTdcHuNnOhblbc3g"
+                            )
+
+                            val prompt = it1 + "in short"
+
+                            viewModelScope.launch {
+                                val response = model.generateContent(prompt)
+                                Log.d("Output", response.text.toString())
+                                speak(response.text.toString())
+                            }
+
+                            //                        when(it1.toLowerCase(Locale.getDefault())){
+                            //                            "turn on bluetooth" -> {
+                            //                                if(!state.value.btState){
+                            //                                    btActionChange()
+                            //                                } else {
+                            //
+                            //                                }
+                            //                            }
+                            //
+                            //                            else ->{
+                            //                                Log.d("Voice Input", it1)
+                            //                            }
+                            //                        }
                         }
-
-//                        when(it1.toLowerCase(Locale.getDefault())){
-//                            "turn on bluetooth" -> {
-//                                if(!state.value.btState){
-//                                    btActionChange()
-//                                } else {
-//
-//                                }
-//                            }
-//
-//                            else ->{
-//                                Log.d("Voice Input", it1)
-//                            }
-//                        }
                     }
                 }
             }
