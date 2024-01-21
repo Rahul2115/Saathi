@@ -29,3 +29,7 @@ Saathi uses the following technologies:
 - [Gemini API](https://ai.google.dev)- Cloud APIs for LLM and Vision 
 - [Firebase](https://firebase.google.com) - Back-end and Database
 - [Figma](https://www.figma.com/) - Ui Design and prototyping
+
+## UI
+<img src="https://github.com/Rahul2115/Saathi/blob/master/images/Saathi Ui.png" alt="Logo" width="900" height="300">
+
