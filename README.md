@@ -31,6 +31,6 @@ Saathi uses the following technologies:
 - [Figma](https://www.figma.com/) - Ui Design and prototyping
 
 ## UI
-<img src="https://github.com/Rahul2115/Saathi/blob/master/images/Saathi%20UI.png" alt="Logo" width="300" height="300">
+<img src="https://github.com/Rahul2115/Saathi/blob/master/images/Saathi%20UI.png" alt="Logo" width="900" height="300">
 
 ## System Design Diagrams
