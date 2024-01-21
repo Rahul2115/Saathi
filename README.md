@@ -1,5 +1,5 @@
 # SAATHI
-![Alt Text](./images/WhatsApp Image 2024-01-21 at 4.50.07 PM.jpeg)
+![Alt Text](./images/logo.jpeg)
 ## An AI powered aid for the visually impaired community
 [![My Skills](https://skillicons.dev/icons?i=kotlin,androidstudio,firebase,gcp,tensorflow,figma&perline=&theme=)](https://skillicons.dev)
 
