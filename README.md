@@ -33,4 +33,13 @@ Saathi uses the following technologies:
 ## UI
 <img src="https://github.com/Rahul2115/Saathi/blob/master/images/Saathi%20UI.png" alt="Logo" width="100%" height="300">
 
-## System Design Diagrams
+## Flow Diagrams
+<img src="https://github.com/Rahul2115/Saathi/blob/master/images/AUTH.png" alt="Logo" width="500" height="300">
+
+<img src="https://github.com/Rahul2115/Saathi/blob/master/images/LLM_Learning.png" alt="Logo" width="500" height="300">
+
+<img src="https://github.com/Rahul2115/Saathi/blob/master/images/OCR.png" alt="Logo" width="500" height="300">
+
+<img src="https://github.com/Rahul2115/Saathi/blob/master/images/Obstacle%20Detection.png" alt="Logo" width="500" height="300">
+
+
