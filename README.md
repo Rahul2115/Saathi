@@ -1,5 +1,6 @@
 # SAATHI
-![Alt Text](./images/logo.jpeg)
+<img src="https://github.com/Rahul2115/Saathi/images/screenshot.png" alt="Logo" width="300" height="300">
+
 ## An AI powered aid for the visually impaired community
 [![My Skills](https://skillicons.dev/icons?i=kotlin,androidstudio,firebase,gcp,tensorflow,figma&perline=&theme=)](https://skillicons.dev)
 
