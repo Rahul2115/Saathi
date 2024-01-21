@@ -55,6 +55,11 @@ Saathi uses the following technologies:
   <img src="https://github.com/Rahul2115/Saathi/blob/master/images/Obstacle%20Detection.png" alt="Logo">
 </details>
 
+<details>
+<summary>Scenario Description</summary>
+  <img src="https://github.com/Rahul2115/Saathi/blob/master/images/Image_Description.png" alt="image">
+</details>
+
 
 
 
