@@ -30,8 +30,34 @@ Saathi uses the following technologies:
 - [Firebase](https://firebase.google.com) - Back-end and Database
 - [Figma](https://www.figma.com/) - Ui Design and prototyping
 
-## UI
-<img src="https://github.com/Rahul2115/Saathi/blob/master/images/Saathi%20UI.png" alt="Logo" width="100%" height="300">
+## Installation
+### Installation
+
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/Rahul2115/Saathi.git
+    ```
+
+2. Open the project in Android Studio.
+
+3. Ensure that you have the necessary dependencies installed:
+   - [Android Studio](https://developer.android.com/studio)
+   - [JDK (Java Development Kit)](https://www.oracle.com/java/technologies/javase-downloads.html)
+
+4. **Gemini API Setup:**
+   - Obtain API credentials from the [Gemini API](https://gemini.com/api).
+   - Create a `secrets.properties` file in the project root and add your Gemini API key and secret:
+
+     ```properties
+     GEMINI_API_KEY=your_api_key
+     GEMINI_API_SECRET=your_api_secret
+     ```
+
+     Make sure to add `secrets.properties` to your `.gitignore` file to keep your API credentials secure.
+
+5. Build and run the app on an emulator or physical device.
+
 
 ## Flow Diagrams
 <details>
