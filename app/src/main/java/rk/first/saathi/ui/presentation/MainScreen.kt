@@ -46,7 +46,7 @@ import rk.first.saathi.Screen
 fun MainScreen(navController: NavController){
     Scaffold(
         bottomBar = {
-            Footer()
+            Footer("Welcome")
         },
         floatingActionButton = {
             Help()
@@ -99,7 +99,7 @@ fun MyButtons(){
 }
 
 @Composable
-fun Footer(){
+fun Footer(value : String){
     BottomAppBar(
         containerColor = Color(0xFFC3B36F),
         contentColor = Color(0xFFFEE990),
@@ -116,7 +116,7 @@ fun Footer(){
                 onClick = {}
             ) {
                 Text(
-                    text = "Welcome",
+                    text = value,
                     color = Color(0xFF2B0E48),
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold
@@ -150,7 +150,7 @@ fun Display(navController:NavController){
             modifier = Modifier
                 .width(193.dp)
                 .height(60.dp),
-            onClick = {navController.navigate(Screen.Home.route)}
+            onClick = {navController.navigate(Screen.Login.route)}
         ) {
             Text(
                 text = "Login",

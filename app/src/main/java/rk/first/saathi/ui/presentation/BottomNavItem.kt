@@ -23,4 +23,9 @@ sealed class BottomNavItem(
         BottomNavItem(
             "LLM",
         )
+
+    data object DESC :
+        BottomNavItem(
+            "DESC",
+        )
 }

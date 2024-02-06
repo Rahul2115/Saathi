@@ -51,7 +51,7 @@ fun Home(navController: NavController,viewModel: SaathiViewModel) {
             val itemList = listOf(
                 BottomNavItem.OCR,
                 BottomNavItem.Home,
-                BottomNavItem.OBJECT,
+                BottomNavItem.DESC,
             )
             HomeFooter(itemslist = itemList,navController = navController)
         },
