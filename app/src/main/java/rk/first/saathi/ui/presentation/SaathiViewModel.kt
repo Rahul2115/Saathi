@@ -388,6 +388,7 @@ class SaathiViewModel @Inject constructor(
                            }
                         }
                         else if (checkState(1) && checkState(4) && checkState(5) && checkState(6) && checkState(2) && checkState(3)) {
+                            //Validation for name if any validation required name is in it1
                             _loginState.update {
                                 it.copy(name = it1)
                             }
@@ -400,11 +401,12 @@ class SaathiViewModel @Inject constructor(
                             }
                         }
                         else if (!checkState(1) && checkState(4) && checkState(5) && checkState(6) && checkState(2) && checkState(3)) {
+                            // Validation for year of Birth
+                            var year = it1
+                            year = year.replace(" ","")
+                            Log.d("Voice Input", year)
                             _loginState.update {
-                                var number = it1
-                                number = number.replace(" ","")
-                                Log.d("Voice Input", number)
-                                it.copy(yearOB = number.toInt())
+                                it.copy(yearOB = year.toInt())
                             }
                         }
 
@@ -415,11 +417,12 @@ class SaathiViewModel @Inject constructor(
                             }
                         }
                         else if (!checkState(1) && !checkState(4) && checkState(5) && checkState(6) && checkState(2) && checkState(3)) {
+                            var month = it1
+                            //Validation for month
+                            month = month.replace(" ","")
+                            Log.d("Voice Input", month)
                             _loginState.update {
-                                var number = it1
-                                number = number.replace(" ","")
-                                Log.d("Voice Input", number)
-                                it.copy(monthOB = number.toInt())
+                                it.copy(monthOB = month.toInt())
                             }
                         }
 
@@ -431,10 +434,11 @@ class SaathiViewModel @Inject constructor(
                         }
                         else if (!checkState(1) && !checkState(4) && !checkState(5) && checkState(6) && checkState(2) && checkState(3)) {
                             _loginState.update {
-                                var number = it1
-                                number = number.replace(" ","")
-                                Log.d("Voice Input", number)
-                                it.copy(dateOB = number.toInt())
+                                var date = it1
+                                //Validation for date
+                                date = date.replace(" ","")
+                                Log.d("Voice Input", date)
+                                it.copy(dateOB = date.toInt())
                             }
                         }
 
@@ -444,9 +448,10 @@ class SaathiViewModel @Inject constructor(
                             }
                         }
                         else if (!checkState(1) && !checkState(4) && !checkState(5) && !checkState(6) && checkState(2) && checkState(3)){
+                            //Validation for Country
+                            var country = it1
                             _loginState.update {
-
-                                it.copy(country = it1)
+                                it.copy(country = country)
                             }
                         }
                         else if (loginState.value.number != 0 && it1.toLowerCase(Locale.getDefault()) == "confirm" && !checkState(1) && !checkState(4) && !checkState(5) && !checkState(6) && !checkState(2) && checkState(3)){
@@ -455,10 +460,11 @@ class SaathiViewModel @Inject constructor(
                             }
                         }
                         else if (!checkState(1) && !checkState(4) && !checkState(5) && !checkState(6) && !checkState(2) && checkState(3)){
+                            var number = it1
+                            //Validation for mobile number
+                            number = number.replace(" ","")
+                            Log.d("Voice Input", number)
                             _loginState.update {
-                                var number = it1
-                                number = number.replace(" ","")
-                                Log.d("Voice Input", number)
                                 it.copy(number = number.toInt())
                             }
                         }
