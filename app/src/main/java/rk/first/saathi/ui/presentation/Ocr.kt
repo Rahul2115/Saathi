@@ -39,7 +39,6 @@ import rk.first.saathi.R
 @Composable
 fun Ocr(navController: NavController,state:State,viewModel: SaathiViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
-
     Scaffold(
         bottomBar = {
             val itemList = listOf(
@@ -47,7 +46,7 @@ fun Ocr(navController: NavController,state:State,viewModel: SaathiViewModel) {
                 BottomNavItem.OCR,
                 BottomNavItem.Home,
             )
-            HomeFooter(itemslist = itemList,navController)
+            HomeFooter(itemslist = itemList,navController,viewModel)
         },
         floatingActionButton = {
             HomeHelp()

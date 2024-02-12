@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 import rk.first.saathi.ui.presentation.DESC
 import rk.first.saathi.ui.presentation.Home
 import rk.first.saathi.ui.presentation.LLM
@@ -18,11 +19,10 @@ import rk.first.saathi.ui.presentation.SaathiViewModel
 @Composable
 fun Navigation(viewModel: SaathiViewModel) {
     val navController = rememberNavController()
-
     val uiState by viewModel.state.collectAsState()
     val logState by viewModel.loginState.collectAsState()
 
-    NavHost(navController = navController, startDestination = Screen.MainScreen.route ){
+    NavHost(navController = navController, startDestination = if(viewModel.auth.currentUser!=null){Screen.Home.route}else{Screen.MainScreen.route}){
         composable(route = Screen.MainScreen.route) {
                 MainScreen(navController=navController)
         }

@@ -6,6 +6,7 @@ import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import java.util.Locale
 
 class OcrImageAnalyzer(
     var viewModel: SaathiViewModel,
@@ -32,36 +33,41 @@ private fun runTextRecognition(image: InputImage,state: State,viewModel: SaathiV
     val options = TextRecognizerOptions.DEFAULT_OPTIONS
     val recognizer = TextRecognition.getClient(options)
     var resultText = "D"
+    val importantKeywords = arrayOf("hospital", "college", "office","deposit","withdraw","pharmacy","garden","department","computer","electronics","mechanical")
     recognizer.process(image)
         .addOnSuccessListener { texts ->
             resultText = texts.text
             //state.value.text = texts.text
-            viewModel.update(texts.text)
+            //viewModel.update(texts.text)
             Log.d("State",state.text)
-            //for (block in texts.textBlocks) {
-                //val blockText = block.text
-                //print(blockText)
-                //val blockCornerPoints = block.cornerPoints
-                //print(blockCornerPoints)
-                //val blockFrame = block.boundingBox
-                //print(blockFrame)
-                //for (line in block.lines) {
-                    //val lineText = line.text
-                   // print(lineText)
-                   // val lineCornerPoints = line.cornerPoints
-                    //print(lineCornerPoints)
-                    //val lineFrame = line.boundingBox
-                   // print(lineFrame)
-                    //for (element in line.elements) {
-                        //val elementText = element.text
-                      //  print(elementText)
-                        //val elementCornerPoints = element.cornerPoints
-                       // print(elementCornerPoints)
-                        //val elementFrame = element.boundingBox
-                       // print(elementFrame)
-                    //}
-                //}
-           // }
+
+        for (block in texts.textBlocks) {
+                val blockText = block.text
+                print(blockText)
+                val blockCornerPoints = block.cornerPoints
+                print(blockCornerPoints)
+                val blockFrame = block.boundingBox
+                print(blockFrame)
+                for (line in block.lines) {
+                    val lineText = line.text
+                    print(lineText)
+                    val lineCornerPoints = line.cornerPoints
+                    print(lineCornerPoints)
+                    val lineFrame = line.boundingBox
+                    print(lineFrame)
+                    for (element in line.elements) {
+                        val elementText = element.text
+                        print(elementText)
+                        val elementCornerPoints = element.cornerPoints
+                        print(elementCornerPoints)
+                        val elementFrame = element.boundingBox
+                        print(elementFrame)
+                        if(importantKeywords.contains(element.text.lowercase(Locale.getDefault()))){
+                            viewModel.speak("${element.text}")
+                        }
+                    }
+                }
+            }
             //processTextRecognitionResult(texts!!)
         }
         .addOnFailureListener { e -> // Task failed with an exception

@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import rk.first.saathi.R
 
@@ -45,7 +46,6 @@ import rk.first.saathi.R
 fun Home(navController: NavController,viewModel: SaathiViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-
     Scaffold(
         bottomBar = {
             val itemList = listOf(
@@ -53,7 +53,7 @@ fun Home(navController: NavController,viewModel: SaathiViewModel) {
                 BottomNavItem.Home,
                 BottomNavItem.DESC,
             )
-            HomeFooter(itemslist = itemList,navController = navController)
+            HomeFooter(itemslist = itemList,navController = navController,viewModel)
         },
         floatingActionButton = {
             HomeHelp()
@@ -68,13 +68,14 @@ fun Home(navController: NavController,viewModel: SaathiViewModel) {
         {
             Header()
             HomeDisplay(isPressed,viewModel)
-            HomeButtons(interactionSource)
+            HomeButtons(interactionSource,viewModel)
         }
     }
+    //viewModel.changeScreenSpeak("Welcome to home Screen")
 }
 
 @Composable
-fun HomeButtons(interactionSource:MutableInteractionSource){
+fun HomeButtons(interactionSource:MutableInteractionSource,viewModel: SaathiViewModel){
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -84,7 +85,7 @@ fun HomeButtons(interactionSource:MutableInteractionSource){
     )
     {
         LargeFloatingActionButton(
-            onClick = {},
+            onClick = {viewModel.logOut()},
             shape = CircleShape,
             containerColor = Color(0xFF2B0E48),
             contentColor = Color(0xFFFEE990)
@@ -108,7 +109,7 @@ fun HomeButtons(interactionSource:MutableInteractionSource){
 }
 
 @Composable
-fun BottomNavigation(itemList:List<BottomNavItem>,navController: NavController) {
+fun BottomNavigation(itemList:List<BottomNavItem>,navController: NavController,viewModel: SaathiViewModel) {
     NavigationBar(
         containerColor = Color(0xFFC3B36F),
         contentColor = Color(0xFFFEE990)
@@ -116,7 +117,8 @@ fun BottomNavigation(itemList:List<BottomNavItem>,navController: NavController) 
         itemList.forEach { item ->
             AddItem(
                 screen = item,
-                navController = navController
+                navController = navController,
+                viewModel = viewModel
             )
         }
     }
@@ -137,7 +139,8 @@ fun BottomNavigation(itemList:List<BottomNavItem>,navController: NavController) 
 @Composable
 fun RowScope.AddItem(
     navController: NavController,
-    screen: BottomNavItem
+    screen: BottomNavItem,
+    viewModel: SaathiViewModel
 ) {
     NavigationBarItem(
         // The icon resource
@@ -155,8 +158,11 @@ fun RowScope.AddItem(
 
         // Click listener for the icon
         onClick = {
+            viewModel.changeScreenSpeak(screen.title)
             if(screen.title.lowercase() != navController.currentDestination?.route?.lowercase() ){navController.navigate(screen.title.lowercase())}
-                  },
+                  }
+
+        ,
 
         // Control all the colors of the icon
         colors = NavigationBarItemDefaults.colors(indicatorColor = Color(0xFFFEE990))
@@ -164,12 +170,12 @@ fun RowScope.AddItem(
 }
 
 @Composable
-fun HomeFooter(itemslist:List<BottomNavItem>,navController: NavController){
+fun HomeFooter(itemslist:List<BottomNavItem>,navController: NavController,viewModel: SaathiViewModel){
     BottomAppBar(
         containerColor = Color(0xFFC3B36F),
         contentColor = Color(0xFFFEE990),
     ) {
-        BottomNavigation(itemList = itemslist, navController = navController)
+        BottomNavigation(itemList = itemslist, navController = navController, viewModel)
     }
 }
 

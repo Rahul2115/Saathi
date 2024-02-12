@@ -59,7 +59,7 @@ fun DESC(navController: NavController, state:State, viewModel: SaathiViewModel) 
                 BottomNavItem.DESC,
                 BottomNavItem.OBJECT,
             )
-            HomeFooter(itemslist = itemList,navController)
+            HomeFooter(itemslist = itemList,navController,viewModel)
         },
         floatingActionButton = {
             HomeHelp()
@@ -187,7 +187,6 @@ fun DESCDisplay(interactionSource: MutableInteractionSource,state: State,viewMod
 
             LargeFloatingActionButton(
                 onClick = {
-                        //ScenerioDesc()
                           viewModel.ScenerioDesc(controller = controller)
                 },
                 shape = CircleShape,
@@ -215,75 +214,3 @@ fun DESCDisplay(interactionSource: MutableInteractionSource,state: State,viewMod
 
 
 
-//@Composable
-//fun DESCDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel)
-//{
-//    val gradient = Brush.linearGradient(
-//        listOf(Color(0XFFFEE990),Color(0xFFF2D660))
-//    )
-//
-//    val isPressed by interactionSource.collectIsPressedAsState()
-//
-//    Box(modifier = Modifier
-//        .fillMaxWidth()
-//        .height(74.dp)
-//        .background(gradient))
-//    {
-//        Log.d("TextRead",state.text)
-//
-//        Text(
-//            text = state.text,
-//            modifier = Modifier.align(Alignment.Center)
-//        )
-//        viewModel.speak(text = state.text)
-//    }
-//
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize(),
-//    )
-//    {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(start = 20.dp, bottom = 20.dp),
-//            horizontalArrangement = Arrangement.Start,
-//            verticalAlignment = Alignment.Bottom
-//        )
-//        {
-//            LargeFloatingActionButton(
-//                onClick = {},
-//                shape = CircleShape,
-//                containerColor = Color(0xFF2B0E48),
-//                contentColor = Color(0xFFFEE990)
-//            ) {
-//                Icon(painter = painterResource(id = R.drawable.home), "Large floating action button"
-//                    , modifier = Modifier.height(50.dp))
-//            }
-//
-//            LargeFloatingActionButton(
-//                onClick = {
-//                },
-//                interactionSource = interactionSource,
-//                shape = CircleShape,
-//                containerColor = Color.White,
-//                modifier = Modifier.padding(start = 30.dp)
-//            ) {
-//                if(isPressed){
-//                    Log.d("Voice","Listening")
-//                    Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
-//                        , modifier = Modifier.height(50.dp))
-//
-//                    viewModel.startListen()
-//                }else{
-//                    Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
-//                        , modifier = Modifier.height(50.dp))
-//
-//                    viewModel.speechRecognizer.stopListening()
-//                }
-//
-//
-//            }
-//        }
-//    }
-//}

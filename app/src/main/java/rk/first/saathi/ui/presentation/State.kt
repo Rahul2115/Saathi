@@ -1,5 +1,6 @@
 package rk.first.saathi.ui.presentation
 
 data class State(
-    var text: String = ""
+    var text: String = "",
+    var storedVerification: String = "",
 )

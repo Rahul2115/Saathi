@@ -1,12 +1,14 @@
 package rk.first.saathi.ui.presentation
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,12 +17,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -31,7 +39,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import rk.first.saathi.R
 import rk.first.saathi.Screen
@@ -100,11 +110,6 @@ fun LoginMic(viewModel:SaathiViewModel){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginDisplay(navController:NavController,viewModel: SaathiViewModel,logState: LoginState){
-
-    var textName by remember { mutableStateOf("") }
-    var textCountry by remember { mutableStateOf("") }
-    var textNumber by remember { mutableStateOf("")}
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -120,99 +125,99 @@ fun LoginDisplay(navController:NavController,viewModel: SaathiViewModel,logState
                 .height(256.dp)
                 .width(311.dp)
         )
-
-        if (viewModel.checkState(1) && viewModel.checkState(2) && viewModel.checkState(3)&& viewModel.checkState(4) && viewModel.checkState(5)&& viewModel.checkState(6)) {
-            OutlinedTextField(
-                value = logState.name,
-                onValueChange = {
-                },
-                label = { Text("Name") }
+        Box(modifier = Modifier
+            .padding(start = 25.dp, bottom = 20.dp, end = 25.dp)
+            .background(Color.White)
+            .fillMaxWidth()
+            .height(180.dp))
+        {
+            Text(modifier = Modifier
+                .padding(start = 30.dp, top = 20.dp),
+                text = "Sign in",
+                color = Color(0xFF2B0E48),
+                fontSize = 19.sp,
+                fontWeight = FontWeight.Bold
             )
 
-            if(logState.name == "") {
-                viewModel.speak("Speak your Name by pressing the mic button")
-            } else{
-                viewModel.speak("Say Confirm if you Name is ${logState.name}")
-            }
+            if (logState.loginSuccess == 0 && viewModel.checkState(2) && viewModel.checkState(3)) {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(top = 40.dp),
+                    colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
+                    value = logState.country,
+                    onValueChange = {},
+                    label = {Text("Country")},
+                )
 
-        }else if(!viewModel.checkState(1) && viewModel.checkState(4)&& viewModel.checkState(5)&& viewModel.checkState(6) && viewModel.checkState(2) && viewModel.checkState(3) ){
-            OutlinedTextField(
-                value = logState.yearOB.toString(),
-                onValueChange = {},
-                label = { Text("Year") }
-            )
-            if(logState.yearOB == 0) {
-                viewModel.speak("Speak your birth year by pressing the mic button")
-            } else{
-                var phone = logState.yearOB.toString()
-                //phone = phone.replace(".".toRegex(), "$0 ")
-                //phone = phone.replace("(.{1})".toRegex(), " ")
-                Log.d("Spaced Number", phone)
-                viewModel.speak("Say Confirm if your birth year is $phone")
-            }
+                if (logState.country == "" && logState.invalidInput == 0) {
+                    viewModel.speak("Speak your Country by pressing the mic button")
+                } else if (logState.country == "" && logState.invalidInput == 1) {
 
-        }else if(!viewModel.checkState(1) && !viewModel.checkState(4)&& viewModel.checkState(5)&& viewModel.checkState(6) && viewModel.checkState(2) && viewModel.checkState(3) ){
-            OutlinedTextField(
-                value = logState.monthOB.toString(),
-                onValueChange = {},
-                label = { Text("month") }
-            )
-            if(logState.monthOB == 0) {
-                viewModel.speak("Speak your birth month by pressing the mic button")
-            } else{
-                var phone = logState.monthOB.toString()
-                //phone = phone.replace(".".toRegex(), "$0 ")
-                //phone = phone.replace("(.{1})".toRegex(), " ")
-                Log.d("Spaced Number", phone)
-                viewModel.speak("Say Confirm if your birth month is $phone")
-            }
+                } else {
+                    viewModel.speak("Say Confirm if your Country is ${logState.country}")
+                }
+            } else if (logState.loginSuccess == 0 && logState.codeSent == 0 && !viewModel.checkState(
+                    2
+                ) && viewModel.checkState(3)
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(top = 40.dp),
+                    colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
+                    value = if(logState.number == 0L){""}else{logState.number.toString()},
+                    onValueChange = {},
+                    label = { Text("Mobile Number") }
+                )
 
-        }else if(!viewModel.checkState(1) && !viewModel.checkState(4)&& !viewModel.checkState(5)&& viewModel.checkState(6) && viewModel.checkState(2) && viewModel.checkState(3) ){
-            OutlinedTextField(
-                value = logState.dateOB.toString(),
-                onValueChange = {},
-                label = { Text("Date") }
-            )
-            if(logState.dateOB == 0) {
-                viewModel.speak("Speak your birth date by pressing the mic button")
-            } else{
-                var phone = logState.dateOB.toString()
-                //phone = phone.replace(".".toRegex(), "$0 ")
-                //phone = phone.replace("(.{1})".toRegex(), " ")
-                Log.d("Spaced Number", phone)
-                viewModel.speak("Say Confirm if your birth date is $phone")
-            }
+                if (logState.number == 0L  && logState.invalidInput == 0) {
+                    viewModel.speak("Speak your Phone number by pressing the mic button")
+                } else if (logState.number == 0L && logState.invalidInput == 1) {
 
-        }else if (!viewModel.checkState(1) && !viewModel.checkState(4)&& !viewModel.checkState(5)&& !viewModel.checkState(6) && viewModel.checkState(2) && viewModel.checkState(3)) {
-            OutlinedTextField(
-                value = logState.country,
-                onValueChange = {},
-                label = { Text("Country") }
-            )
+                } else {
+                    var phone = logState.number.toString()
+                    phone = phone.replace(".".toRegex(), "$0 ")
+                    //phone = phone.replace("(.{1})".toRegex(), " ")
+                    Log.d("Spaced Number", phone)
+                    viewModel.speak("Say Confirm if your number is $phone")
+                }
+            } else if (logState.loginSuccess == 0 && logState.codeSent == 1 && !viewModel.checkState(
+                    2
+                ) && !viewModel.checkState(3)
+            ) {
+                Log.d(
+                    "Values in otp",
+                    "${logState.loginSuccess},${logState.codeSent},${!viewModel.checkState(3)}"
+                )
+                OutlinedTextField(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(top = 40.dp),
+                    colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
+                    value = logState.otp,
+                    onValueChange = {},
+                    label = { Text("OTP") }
+                )
 
-            if(logState.country == "") {
-                viewModel.speak("Speak your Country by pressing the mic button")
-            } else{
-                viewModel.speak("Say Confirm if your Country is ${logState.country}")
-            }
-        }else if(!viewModel.checkState(1) && !viewModel.checkState(4)&& !viewModel.checkState(5)&& !viewModel.checkState(6) && !viewModel.checkState(2) && viewModel.checkState(3)){
-            OutlinedTextField(
-                value = logState.number.toString(),
-                onValueChange = {},
-                label = { Text("Number") }
-            )
+                if (logState.otp == "") {
+                    viewModel.speak("Speak your Otp by pressing the mic button")
+                } else if (logState.otp == "" && logState.invalidInput == 1) {
 
-            if(logState.number == 0) {
-                viewModel.speak("Speak your Phone number by pressing the mic button")
-            } else{
-                var phone = logState.number.toString()
-                phone = phone.replace(".".toRegex(), "$0 ")
-                //phone = phone.replace("(.{1})".toRegex(), " ")
-                Log.d("Spaced Number", phone)
-                viewModel.speak("Say Confirm if your number is $phone")
+                } else if(logState.otpConfirmed == 0) {
+                    var Otp = logState.otp
+                    Otp = Otp.replace(".".toRegex(), "$0 ")
+                    //phone = phone.replace("(.{1})".toRegex(), " ")
+                    Log.d("Spaced Number", Otp)
+                    viewModel.speak("Say Confirm if your Otp is $Otp")
+                }
+            } else {
+                Log.d(
+                    "Values in last else",
+                    "${logState.loginSuccess},${logState.codeSent},${!viewModel.checkState(3)}"
+                )
+                navController.navigate(Screen.Home.route)
             }
-        }else{
-            navController.navigate(Screen.Home.route)
         }
     }
 }

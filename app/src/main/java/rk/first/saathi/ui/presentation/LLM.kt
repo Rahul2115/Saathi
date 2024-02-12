@@ -28,13 +28,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
 import rk.first.saathi.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LLM(navController: NavController, state:State, viewModel: SaathiViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
-
     Scaffold(
         bottomBar = {
             val itemList = listOf(
@@ -42,7 +42,7 @@ fun LLM(navController: NavController, state:State, viewModel: SaathiViewModel) {
                 BottomNavItem.OCR,
                 BottomNavItem.Home,
             )
-            HomeFooter(itemslist = itemList,navController)
+            HomeFooter(itemslist = itemList,navController,viewModel)
         },
         floatingActionButton = {
             HomeHelp()
@@ -58,6 +58,7 @@ fun LLM(navController: NavController, state:State, viewModel: SaathiViewModel) {
             LLMDisplay(interactionSource,state, viewModel = viewModel)
         }
     }
+
 }
 
 @Composable
@@ -126,8 +127,6 @@ fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
 
                     viewModel.speechRecognizer.stopListening()
                 }
-
-
             }
         }
     }
