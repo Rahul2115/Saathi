@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.graphics.Bitmap
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -17,6 +18,7 @@ import androidx.camera.core.ImageCapture.OnImageCapturedCallback
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.view.LifecycleCameraController
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,6 +43,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.internal.wait
+import rk.first.saathi.R
 import java.io.ByteArrayOutputStream
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -55,6 +58,8 @@ class SaathiViewModel @Inject constructor(
     private lateinit var  mActivity : Activity
     lateinit var resendToken : PhoneAuthProvider.ForceResendingToken
     lateinit private var callbacks :PhoneAuthProvider.OnVerificationStateChangedCallbacks
+
+    val importantKeywords = mutableListOf<String>("hospital", "college", "office","deposit","withdraw","pharmacy","garden","department","computer","electronics","mechanical")
 
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
@@ -72,46 +77,31 @@ class SaathiViewModel @Inject constructor(
         // Use a model that's applicable for your use case (see "Implement basic use cases" below)
         modelName = "gemini-pro",
         // Access your API key as a Build Configuration variable (see "Set up your API key" above)
-        apiKey = "AIzaSyAWPyQjaiDlSP4ocGx3jegWCHZaqVXTJwA"
+        apiKey = state.value.apiKey
     )
 
     val generativeModel = GenerativeModel(
         // For text-and-images input (multimodal), use the gemini-pro-vision model
         modelName = "gemini-pro-vision",
         // Access your API key as a Build Configuration variable (see "Set up your API key" above)
-        apiKey = "AIzaSyAWPyQjaiDlSP4ocGx3jegWCHZaqVXTJwA"
+        apiKey = state.value.apiKey
     )
-
-    fun generateDesc(image: Uri)
-    {
-        val prompt = "Describe the Scenario in the Image"
-
-        //val bitmap = BitmapFactory.decodeFile(image.toString())
-
-        val bitmap = MediaStore.Images.Media.getBitmap(app.contentResolver,image)
-
-        val inputContent = content {
-            image(bitmap)
-            text(prompt)
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = generativeModel.generateContent(inputContent)
-            print(response.text)
-            Log.d("Output", response.text.toString())
-        }
-    }
 
     fun ScenerioDesc(
         controller: LifecycleCameraController
     ){
+        _state.update {
+            it.copy(clickedState = false)
+        }
         controller.takePicture(
             ContextCompat.getMainExecutor(app),
             object : OnImageCapturedCallback(){
                 override fun onCaptureSuccess(image: ImageProxy) {
                     super.onCaptureSuccess(image)
                     Log.d("Clicked", "Image Captured ${image.imageInfo}")
-                    speak("Image Captured")
+
+                    var mediaPlayer = MediaPlayer.create(app, R.raw.camera)
+                    mediaPlayer.start() // no need to call prepare(); create() does that for you
 
                     viewModelScope.launch{
                         delay(2000L)
@@ -214,6 +204,100 @@ class SaathiViewModel @Inject constructor(
         )
     }
 
+    fun updateScreen(value: String){
+        _state.update {
+            it.copy(gotoScreen = value)
+        }
+    }
+
+    fun homeListen() {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+        )
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+        speechRecognizer.setRecognitionListener(object: RecognitionListener {
+            override fun onReadyForSpeech(p0: Bundle?) {
+            }
+
+            override fun onBeginningOfSpeech() {
+            }
+
+            override fun onRmsChanged(p0: Float) {
+
+            }
+
+            override fun onBufferReceived(p0: ByteArray?) {
+
+            }
+
+            override fun onEndOfSpeech() {
+
+            }
+
+            override fun onError(p0: Int) {
+
+            }
+
+            override fun onResults(bundle: Bundle?) {
+                Log.d("Voice Input", "In result")
+                bundle?.let {
+                    val result = it.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                    result?.get(0)?.let { it1 ->
+                        Log.d("Voice Input", it1)
+                        Toast.makeText(app, it1, Toast.LENGTH_SHORT).show()
+                        when (it1.trim().toLowerCase()) {
+                            "home" -> {
+                                // Navigate to the Home Page
+                                _state.update {
+                                    it.copy(gotoScreen = "home")
+                                }
+                            }
+
+                            "learn" -> {
+                                // Navigate to the LLM Page
+                                _state.update {
+                                    it.copy(gotoScreen = "learn")
+                                }
+
+                            }
+
+                            "read" -> {
+                                // Navigate to the OCR Page
+                                _state.update {
+                                    it.copy(gotoScreen = "read")
+                                }
+
+                            }
+
+                            "look" -> {
+                                // Navigate to the DESC Page
+                                _state.update {
+                                    it.copy(gotoScreen = "look")
+                                }
+                            }
+
+                            else -> {
+                                // Handle unrecognized input
+                                // Prompt the user to say it again
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onPartialResults(p0: Bundle?) {
+
+            }
+
+            override fun onEvent(p0: Int, p1: Bundle?) {
+
+            }
+        })
+        speechRecognizer.startListening(intent)
+    }
+
     fun startListen() {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         intent.putExtra(
@@ -271,20 +355,6 @@ class SaathiViewModel @Inject constructor(
                                 Log.d("Output", response.text.toString())
                                 speak(response.text.toString())
                             }
-
-                            //                        when(it1.toLowerCase(Locale.getDefault())){
-                            //                            "turn on bluetooth" -> {
-                            //                                if(!state.value.btState){
-                            //                                    btActionChange()
-                            //                                } else {
-                            //
-                            //                                }
-                            //                            }
-                            //
-                            //                            else ->{
-                            //                                Log.d("Voice Input", it1)
-                            //                            }
-                            //                        }
                         }
                     }
                 }
@@ -310,6 +380,19 @@ class SaathiViewModel @Inject constructor(
     }
     fun speak(text:String){
         tts.speak(text,TextToSpeech.QUEUE_FLUSH, null)
+    }
+
+    fun updatePageState(route:String?){
+        if(route!=null){
+            _state.update {
+                it.copy(currentPage = route)
+            }
+        }
+    }
+    fun clickStateValue(value : Boolean){
+        _state.update {
+            it.copy(clickedState = value)
+        }
     }
 
     fun update(value: String){
@@ -438,7 +521,7 @@ class SaathiViewModel @Inject constructor(
                      }
                      else if (loginState.value.codeSent == 1 && !checkState(2) && !checkState(3)){
                          // Validation for OTP
-                         val otp = it1.trim() // Remove leading and trailing whitespace
+                         val otp = it1.replace("\\s+".toRegex(), "")
                          val validOtpPattern = Regex("\\d{6}") // Regex pattern for 6 digits
                          if (otp.matches(validOtpPattern)) {
                              _loginState.update {
@@ -447,9 +530,9 @@ class SaathiViewModel @Inject constructor(
                          } else {
                              // Handle invalid OTP input
                              _loginState.update {
-                                 it.copy(invalidInput = 1, otp = " ")
+                                 it.copy(invalidInput = 1, otp = "")
                              }
-                             speak("Invalid Input Speak your mobile number again by pressing the mic button")
+                             speak("Invalid Input Speak your otp again by pressing the mic button")
                          }
                      }
                     }
@@ -555,11 +638,26 @@ class SaathiViewModel @Inject constructor(
         Firebase.auth.signOut()
     }
 
+    fun updateAPI(value: String){
+        if(value != "" && value != " ")
+        {
+            _state.update {
+                it.copy(apiKey = value)
+            }
+        }
+    }
+
     fun changeScreenSpeak(title : String){
         viewModelScope.launch {
-            delay(1000L)
+            delay(3000L)
             speak("${title}")
         }
+    }
 
+    fun addKeywords(word:String){
+        if(word!="" && word!= " ")
+        {
+            importantKeywords.add(word.lowercase())
+        }
     }
 }

@@ -2,6 +2,7 @@ package rk.first.saathi.ui.presentation
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.media.MediaPlayer
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import rk.first.saathi.R
 import rk.first.saathi.Screen
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,6 +94,8 @@ fun LoginMic(viewModel:SaathiViewModel){
             containerColor = Color.White,
         ) {
             if(isPressed){
+                var mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
+                mediaPlayer.start() // no need to call prepare(); create() does that for you
                 Log.d("Voice","Listening")
                 Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
                     , modifier = Modifier.height(50.dp))
@@ -200,7 +205,7 @@ fun LoginDisplay(navController:NavController,viewModel: SaathiViewModel,logState
                     label = { Text("OTP") }
                 )
 
-                if (logState.otp == "") {
+                if (logState.otp == "" && logState.invalidInput == 0) {
                     viewModel.speak("Speak your Otp by pressing the mic button")
                 } else if (logState.otp == "" && logState.invalidInput == 1) {
 

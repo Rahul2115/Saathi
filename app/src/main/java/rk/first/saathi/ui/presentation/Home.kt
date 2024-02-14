@@ -1,5 +1,7 @@
 package rk.first.saathi.ui.presentation
 
+import android.media.MediaPlayer
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -31,10 +33,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,15 +47,17 @@ import rk.first.saathi.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(navController: NavController,viewModel: SaathiViewModel) {
+fun Home(navController: NavController,viewModel: SaathiViewModel,uiState: State) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    handleScreens(uiState,navController)
+    viewModel.updatePageState(navController.currentDestination?.route?.lowercase())
     Scaffold(
         bottomBar = {
             val itemList = listOf(
-                BottomNavItem.OCR,
+                BottomNavItem.Read,
                 BottomNavItem.Home,
-                BottomNavItem.DESC,
+                BottomNavItem.LOOK,
             )
             HomeFooter(itemslist = itemList,navController = navController,viewModel)
         },
@@ -67,15 +73,22 @@ fun Home(navController: NavController,viewModel: SaathiViewModel) {
         )
         {
             Header()
-            HomeDisplay(isPressed,viewModel)
-            HomeButtons(interactionSource,viewModel)
+            HomeDisplay(viewModel)
+            HomeButtons(isPressed,interactionSource,viewModel)
         }
     }
     //viewModel.changeScreenSpeak("Welcome to home Screen")
 }
 
 @Composable
-fun HomeButtons(interactionSource:MutableInteractionSource,viewModel: SaathiViewModel){
+fun handleScreens(uiState: State,navController: NavController){
+    if(uiState.gotoScreen != "home") {
+        navController.navigate(uiState.gotoScreen)
+    }
+}
+
+@Composable
+fun HomeButtons(isPressed: Boolean,interactionSource:MutableInteractionSource,viewModel: SaathiViewModel){
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -102,8 +115,21 @@ fun HomeButtons(interactionSource:MutableInteractionSource,viewModel: SaathiView
             containerColor = Color.White,
             modifier = Modifier.padding(start = 30.dp)
         ) {
-            Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
-                , modifier = Modifier.height(50.dp))
+            if(isPressed){
+                var mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
+                mediaPlayer.start() // no need to call prepare(); create() does that for you
+                Log.d("Voice","Listening")
+                Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
+                    , modifier = Modifier.height(50.dp))
+
+                viewModel.homeListen()
+            }else{
+                Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
+                    , modifier = Modifier.height(50.dp))
+                viewModel.speechRecognizer.stopListening()
+            }
+//            Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
+//                , modifier = Modifier.height(50.dp))
         }
     }
 }
@@ -159,6 +185,7 @@ fun RowScope.AddItem(
         // Click listener for the icon
         onClick = {
             viewModel.changeScreenSpeak(screen.title)
+            viewModel.updateScreen(screen.title.lowercase())
             if(screen.title.lowercase() != navController.currentDestination?.route?.lowercase() ){navController.navigate(screen.title.lowercase())}
                   }
 
@@ -196,7 +223,7 @@ fun HomeHelp(){
 }
 
 @Composable
-fun HomeDisplay(isPressed: Boolean,viewModel: SaathiViewModel){
+fun HomeDisplay(viewModel: SaathiViewModel){
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -213,18 +240,18 @@ fun HomeDisplay(isPressed: Boolean,viewModel: SaathiViewModel){
                 .width(311.dp)
         )
 
-        if(isPressed){
-            viewModel.speak("Saathi is listening")
-            Text(
-                text = "Saathi is listening...",
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight(400),
-                    color = Color(0xFF000000),
-                    textAlign = TextAlign.Center,
-                ),
-                modifier = Modifier.padding(top = 25.dp)
-            )
-        }
+//        if(isPressed){
+//            viewModel.speak("Saathi is listening")
+//            Text(
+//                text = "Saathi is listening...",
+//                style = TextStyle(
+//                    fontSize = 20.sp,
+//                    fontWeight = FontWeight(400),
+//                    color = Color(0xFF000000),
+//                    textAlign = TextAlign.Center,
+//                ),
+//                modifier = Modifier.padding(top = 25.dp)
+//            )
+//        }
     }
 }

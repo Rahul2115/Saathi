@@ -1,5 +1,6 @@
 package rk.first.saathi.ui.presentation
 
+import android.media.MediaPlayer
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,21 +26,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import rk.first.saathi.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LLM(navController: NavController, state:State, viewModel: SaathiViewModel) {
+fun Learn(navController: NavController, state:State, viewModel: SaathiViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
+    viewModel.updatePageState(navController.currentDestination?.route?.lowercase())
     Scaffold(
         bottomBar = {
             val itemList = listOf(
-                BottomNavItem.LLM,
-                BottomNavItem.OCR,
+                BottomNavItem.Learn,
+                BottomNavItem.Read,
                 BottomNavItem.Home,
             )
             HomeFooter(itemslist = itemList,navController,viewModel)
@@ -116,6 +118,8 @@ fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
                 modifier = Modifier.padding(start = 30.dp)
             ) {
                 if(isPressed){
+                    var mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
+                    mediaPlayer.start() // no need to call prepare(); create() does that for you
                     Log.d("Voice","Listening")
                     Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
                         , modifier = Modifier.height(50.dp))

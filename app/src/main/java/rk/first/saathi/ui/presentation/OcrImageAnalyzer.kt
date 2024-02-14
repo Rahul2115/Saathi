@@ -33,7 +33,7 @@ private fun runTextRecognition(image: InputImage,state: State,viewModel: SaathiV
     val options = TextRecognizerOptions.DEFAULT_OPTIONS
     val recognizer = TextRecognition.getClient(options)
     var resultText = "D"
-    val importantKeywords = arrayOf("hospital", "college", "office","deposit","withdraw","pharmacy","garden","department","computer","electronics","mechanical")
+
     recognizer.process(image)
         .addOnSuccessListener { texts ->
             resultText = texts.text
@@ -62,8 +62,8 @@ private fun runTextRecognition(image: InputImage,state: State,viewModel: SaathiV
                         print(elementCornerPoints)
                         val elementFrame = element.boundingBox
                         print(elementFrame)
-                        if(importantKeywords.contains(element.text.lowercase(Locale.getDefault()))){
-                            viewModel.speak("${element.text}")
+                        if(viewModel.importantKeywords.contains(element.text.lowercase(Locale.getDefault()))){
+                            viewModel.speak(element.text)
                         }
                     }
                 }

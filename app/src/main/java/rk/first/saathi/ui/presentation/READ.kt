@@ -37,13 +37,14 @@ import rk.first.saathi.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Ocr(navController: NavController,state:State,viewModel: SaathiViewModel) {
+fun READ(navController: NavController,state:State,viewModel: SaathiViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
+    viewModel.updatePageState(navController.currentDestination?.route?.lowercase())
     Scaffold(
         bottomBar = {
             val itemList = listOf(
-                BottomNavItem.LLM,
-                BottomNavItem.OCR,
+                BottomNavItem.Learn,
+                BottomNavItem.Read,
                 BottomNavItem.Home,
             )
             HomeFooter(itemslist = itemList,navController,viewModel)

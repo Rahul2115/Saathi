@@ -9,23 +9,27 @@ sealed class BottomNavItem(
 
             )
 
-    data object OCR :
+    data object Read :
         BottomNavItem(
-            "OCR",
+            "Read",
         )
 
-    data object OBJECT :
+    data object Setting :
         BottomNavItem(
-            "OBJECT",
+            "Setting",
         )
 
-    data object LLM :
+    data object Learn :
         BottomNavItem(
-            "LLM",
+            "Learn",
         )
 
-    data object DESC :
+    data object LOOK :
         BottomNavItem(
-            "DESC",
+            "Look",
+        )
+    data object Empty :
+        BottomNavItem(
+            "",
         )
 }
