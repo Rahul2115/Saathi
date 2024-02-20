@@ -9,9 +9,9 @@ sealed class BottomNavItem(
 
             )
 
-    data object Read :
+    data object Find :
         BottomNavItem(
-            "Read",
+            "Find",
         )
 
     data object Setting :
@@ -31,5 +31,9 @@ sealed class BottomNavItem(
     data object Empty :
         BottomNavItem(
             "",
+        )
+    data object Read :
+        BottomNavItem(
+            "Read",
         )
 }

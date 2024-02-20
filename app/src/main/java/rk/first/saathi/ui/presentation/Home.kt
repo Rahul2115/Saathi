@@ -4,9 +4,12 @@ import android.media.MediaPlayer
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -14,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BottomAppBar
@@ -35,13 +39,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import rk.first.saathi.R
 
@@ -52,10 +52,11 @@ fun Home(navController: NavController,viewModel: SaathiViewModel,uiState: State)
     val isPressed by interactionSource.collectIsPressedAsState()
     handleScreens(uiState,navController)
     viewModel.updatePageState(navController.currentDestination?.route?.lowercase())
+
     Scaffold(
         bottomBar = {
             val itemList = listOf(
-                BottomNavItem.Read,
+                BottomNavItem.Find,
                 BottomNavItem.Home,
                 BottomNavItem.LOOK,
             )
@@ -75,6 +76,7 @@ fun Home(navController: NavController,viewModel: SaathiViewModel,uiState: State)
             Header()
             HomeDisplay(viewModel)
             HomeButtons(isPressed,interactionSource,viewModel)
+            // the color will change depending on the presence of a hover
         }
     }
     //viewModel.changeScreenSpeak("Welcome to home Screen")
@@ -113,7 +115,8 @@ fun HomeButtons(isPressed: Boolean,interactionSource:MutableInteractionSource,vi
             interactionSource = interactionSource,
             shape = CircleShape,
             containerColor = Color.White,
-            modifier = Modifier.padding(start = 30.dp)
+            modifier = Modifier
+                .padding(start = 30.dp)
         ) {
             if(isPressed){
                 var mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
@@ -121,7 +124,6 @@ fun HomeButtons(isPressed: Boolean,interactionSource:MutableInteractionSource,vi
                 Log.d("Voice","Listening")
                 Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
                     , modifier = Modifier.height(50.dp))
-
                 viewModel.homeListen()
             }else{
                 Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
@@ -186,11 +188,10 @@ fun RowScope.AddItem(
         onClick = {
             viewModel.changeScreenSpeak(screen.title)
             viewModel.updateScreen(screen.title.lowercase())
-            if(screen.title.lowercase() != navController.currentDestination?.route?.lowercase() ){navController.navigate(screen.title.lowercase())}
-                  }
-
-        ,
-
+            if (screen.title.lowercase() != navController.currentDestination?.route?.lowercase()) {
+                navController.navigate(screen.title.lowercase())
+            }
+        },
         // Control all the colors of the icon
         colors = NavigationBarItemDefaults.colors(indicatorColor = Color(0xFFFEE990))
     )

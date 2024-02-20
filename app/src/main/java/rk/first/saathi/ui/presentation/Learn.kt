@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import rk.first.saathi.R
+import rk.first.saathi.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,9 +41,9 @@ fun Learn(navController: NavController, state:State, viewModel: SaathiViewModel)
     Scaffold(
         bottomBar = {
             val itemList = listOf(
+                BottomNavItem.Empty,
                 BottomNavItem.Learn,
-                BottomNavItem.Read,
-                BottomNavItem.Home,
+                BottomNavItem.Find,
             )
             HomeFooter(itemslist = itemList,navController,viewModel)
         },
@@ -57,14 +58,14 @@ fun Learn(navController: NavController, state:State, viewModel: SaathiViewModel)
                 .background(Color(0xFFFEE990)),
         )
         {
-            LLMDisplay(interactionSource,state, viewModel = viewModel)
+            LLMDisplay(interactionSource,state, viewModel = viewModel,navController)
         }
     }
 
 }
 
 @Composable
-fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel)
+fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel,navController: NavController)
 {
     val gradient = Brush.linearGradient(
         listOf(Color(0XFFFEE990),Color(0xFFF2D660))
@@ -100,7 +101,11 @@ fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
         )
         {
             LargeFloatingActionButton(
-                onClick = {},
+                onClick = {
+                         viewModel.changeScreenSpeak("home")
+                         viewModel.updateScreen(Screen.Home.route)
+                         navController.navigate(Screen.Home.route)
+                },
                 shape = CircleShape,
                 containerColor = Color(0xFF2B0E48),
                 contentColor = Color(0xFFFEE990)
@@ -124,7 +129,7 @@ fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
                     Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
                         , modifier = Modifier.height(50.dp))
 
-                    viewModel.startListen()
+                    viewModel.learnListen()
                 }else{
                     Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
                         , modifier = Modifier.height(50.dp))

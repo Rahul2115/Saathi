@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package rk.first.saathi.ui.presentation
 
 import android.util.Log
@@ -33,38 +31,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import rk.first.saathi.R
 import rk.first.saathi.Screen
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LOOK(navController: NavController, state:State, viewModel: SaathiViewModel) {
+fun Find(navController: NavController,state:State,viewModel: SaathiViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
-
     viewModel.updatePageState(navController.currentDestination?.route?.lowercase())
-
-    viewModel.clickStateValue(false)
-
-    val context = LocalContext.current
-
-    val controller = remember {
-        LifecycleCameraController(context).apply {
-            setEnabledUseCases(CameraController.IMAGE_CAPTURE)
-        }
-    }
-
-    if(state.clickedState){
-        viewModel.ScenerioDesc(controller = controller)
-    }
-
     Scaffold(
         bottomBar = {
             val itemList = listOf(
+                BottomNavItem.Learn,
+                BottomNavItem.Find,
                 BottomNavItem.Home,
-                BottomNavItem.LOOK,
-                BottomNavItem.Read,
             )
             HomeFooter(itemslist = itemList,navController,viewModel)
         },
@@ -79,25 +61,39 @@ fun LOOK(navController: NavController, state:State, viewModel: SaathiViewModel) 
                 .background(Color(0xFFFEE990)),
         )
         {
-            DESCDisplay(interactionSource,state, viewModel = viewModel,controller,navController)
-            //SceneDispaly(interactionSource,state, viewModel = viewModel)
+            OcrDisplay(interactionSource,state, viewModel = viewModel,navController)
         }
     }
 }
 
-
 @Composable
-fun DESCDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel,controller:LifecycleCameraController,navController: NavController)
+fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel,navController: NavController)
 {
-
+    val context = LocalContext.current
 
     var textRead by remember {
         mutableStateOf("R")
     }
 
+    val analyzer = remember {
+        OcrImageAnalyzer(
+            viewModel = viewModel,
+            state = state,
+            onResults = {
+                textRead = it
+            }
+        )
+    }
 
-
-    //controller.cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+    val controller = remember {
+        LifecycleCameraController(context).apply {
+            setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
+            setImageAnalysisAnalyzer(
+                ContextCompat.getMainExecutor(context),
+                analyzer
+            )
+        }
+    }
 
     val gradient = Brush.linearGradient(
         listOf(Color(0XFFFEE990),Color(0xFFF2D660))
@@ -106,14 +102,14 @@ fun DESCDisplay(interactionSource: MutableInteractionSource,state: State,viewMod
         .fillMaxWidth()
         .height(74.dp)
         .background(gradient))
-    {
-        Log.d("TextRead",state.text)
+        {
+            Log.d("TextRead",state.text)
 
-        Text(
-            text = state.text,
-            modifier = Modifier.align(Alignment.Center)
-        )
-        viewModel.speak(text = state.text)
+            Text(
+                text = state.text,
+                modifier = Modifier.align(Alignment.Center)
+            )
+            viewModel.speak(text = state.text)
     }
 
     Box(
@@ -148,8 +144,9 @@ fun DESCDisplay(interactionSource: MutableInteractionSource,state: State,viewMod
 
             LargeFloatingActionButton(
                 onClick = {
-                    viewModel.ScenerioDesc(controller = controller)
+
                 },
+                interactionSource = interactionSource,
                 shape = CircleShape,
                 containerColor = Color.White,
                 modifier = Modifier.padding(start = 30.dp)
@@ -157,21 +154,6 @@ fun DESCDisplay(interactionSource: MutableInteractionSource,state: State,viewMod
                 Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
                     , modifier = Modifier.height(50.dp))
             }
-
-//            LargeFloatingActionButton(
-//                onClick = {
-//                },
-//                interactionSource = interactionSource,
-//                shape = CircleShape,
-//                containerColor = Color.White,
-//                modifier = Modifier.padding(start = 30.dp)
-//            ) {
-//                Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
-//                    , modifier = Modifier.height(50.dp))
-//            }
         }
     }
 }
-
-
-

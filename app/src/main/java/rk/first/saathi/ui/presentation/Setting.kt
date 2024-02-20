@@ -38,7 +38,7 @@ fun Setting(navController: NavController, viewModel: SaathiViewModel, uiState: S
     Scaffold(
         bottomBar = {
             val itemList = listOf(
-                BottomNavItem.LOOK,
+                BottomNavItem.Read,
                 BottomNavItem.Setting,
                 BottomNavItem.Empty,
             )

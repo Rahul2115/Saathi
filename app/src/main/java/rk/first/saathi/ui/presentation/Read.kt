@@ -20,10 +20,7 @@ import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -31,21 +28,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import rk.first.saathi.R
+import rk.first.saathi.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun READ(navController: NavController,state:State,viewModel: SaathiViewModel) {
+fun Read(navController: NavController, state:State, viewModel: SaathiViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
+
     viewModel.updatePageState(navController.currentDestination?.route?.lowercase())
+
+    viewModel.clickStateValue(false)
+
+    val context = LocalContext.current
+
+    val controller = remember {
+        LifecycleCameraController(context).apply {
+            setEnabledUseCases(CameraController.IMAGE_CAPTURE)
+        }
+    }
+
+    if(state.clickedState){
+        viewModel.ScenerioDesc(controller = controller)
+    }
+
     Scaffold(
         bottomBar = {
             val itemList = listOf(
-                BottomNavItem.Learn,
+                BottomNavItem.LOOK,
                 BottomNavItem.Read,
-                BottomNavItem.Home,
+                BottomNavItem.Setting,
             )
             HomeFooter(itemslist = itemList,navController,viewModel)
         },
@@ -60,40 +73,14 @@ fun READ(navController: NavController,state:State,viewModel: SaathiViewModel) {
                 .background(Color(0xFFFEE990)),
         )
         {
-            OcrDisplay(interactionSource,state, viewModel = viewModel)
+            ReadDisplay(interactionSource,state, viewModel = viewModel,controller,navController)
         }
     }
 }
 
 @Composable
-fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel)
+fun ReadDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel,controller:LifecycleCameraController,navController: NavController)
 {
-    val context = LocalContext.current
-
-    var textRead by remember {
-        mutableStateOf("R")
-    }
-
-    val analyzer = remember {
-        OcrImageAnalyzer(
-            viewModel = viewModel,
-            state = state,
-            onResults = {
-                textRead = it
-            }
-        )
-    }
-
-    val controller = remember {
-        LifecycleCameraController(context).apply {
-            setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
-            setImageAnalysisAnalyzer(
-                ContextCompat.getMainExecutor(context),
-                analyzer
-            )
-        }
-    }
-
     val gradient = Brush.linearGradient(
         listOf(Color(0XFFFEE990),Color(0xFFF2D660))
     )
@@ -101,14 +88,14 @@ fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
         .fillMaxWidth()
         .height(74.dp)
         .background(gradient))
-        {
-            Log.d("TextRead",state.text)
+    {
+        Log.d("TextRead",state.text)
 
-            Text(
-                text = state.text,
-                modifier = Modifier.align(Alignment.Center)
-            )
-            viewModel.speak(text = state.text)
+        Text(
+            text = state.text,
+            modifier = Modifier.align(Alignment.Center)
+        )
+        viewModel.speak(text = state.text)
     }
 
     Box(
@@ -128,7 +115,11 @@ fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
         )
         {
             LargeFloatingActionButton(
-                onClick = {},
+                onClick = {
+                    viewModel.changeScreenSpeak("home")
+                    viewModel.updateScreen(Screen.Home.route)
+                    navController.navigate(Screen.Home.route)
+                },
                 shape = CircleShape,
                 containerColor = Color(0xFF2B0E48),
                 contentColor = Color(0xFFFEE990)
@@ -139,8 +130,8 @@ fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
 
             LargeFloatingActionButton(
                 onClick = {
+                    viewModel.TextRecognition(controller,viewModel)
                 },
-                interactionSource = interactionSource,
                 shape = CircleShape,
                 containerColor = Color.White,
                 modifier = Modifier.padding(start = 30.dp)
