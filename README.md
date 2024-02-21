@@ -30,22 +30,17 @@ Saathi uses the following technologies:
 - [Firebase](https://firebase.google.com) - Back-end and Database
 - [Figma](https://www.figma.com/) - Ui Design and prototyping
 
-## Installation
-### Installation
+## Developer Machine Setup Guide
 
-1. Clone the repository:
+### Prerequisites
 
-    ```bash
-    git clone https://github.com/Rahul2115/Saathi.git
-    ```
+Before proceeding with the setup, ensure that the following software is installed on your development machine:
 
-2. Open the project in Android Studio.
+1. **Android Studio**: Download and install the latest version of [Android Studio](https://developer.android.com/studio).
 
-3. Ensure that you have the necessary dependencies installed:
-   - [Android Studio](https://developer.android.com/studio)
-   - [JDK (Java Development Kit)](https://www.oracle.com/java/technologies/javase-downloads.html)
+2. **Git**: Install Git for version control. You can download it from the [official Git website](https://git-scm.com/).
 
-4. **Gemini API Setup:**
+3. **Gemini API Setup:**
    - Obtain API credentials from the [Gemini API](https://gemini.com/api).
    - Create a `secrets.properties` file in the project root and add your Gemini API key and secret:
 
@@ -55,8 +50,27 @@ Saathi uses the following technologies:
      ```
 
      Make sure to add `secrets.properties` to your `.gitignore` file to keep your API credentials secure.
+### Setup Instructions
 
-5. Build and run the app on an emulator or physical device.
+Follow these steps to set up your development environment:
+
+1. **Clone the Repository**: Open a terminal or command prompt and clone the GitHub repository containing the project code using the following command:
+
+    ```bash
+    git clone https://github.com/Rahul2115/Saathi.git
+    ```
+
+2. **Open Project in Android Studio**: Launch Android Studio and select "Open an existing Android Studio project." Navigate to the directory where you cloned the repository and select the `build.gradle` file located in the root directory of the project.
+
+3. **Install Dependencies**: Android Studio may prompt you to install missing dependencies and SDK components. Follow the prompts to install them.
+
+4. **Configure Firebase Backend**:
+    - If you haven't already, create a Firebase project in the [Firebase Console](https://console.firebase.google.com/).
+    - Add your Android app to the Firebase project and download the `google-services.json` file.
+    - Place the `google-services.json` file in the `app` directory of your Android project.
+
+5. **Run the App**: After configuring Firebase, you can run the app locally on an emulator or a connected device. Click the green play button in Android Studio to build and run the app.
+
 
 
 ## Flow Diagrams
