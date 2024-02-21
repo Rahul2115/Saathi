@@ -6,5 +6,4 @@ data class State(
     var gotoScreen : String = "home",
     var clickedState: Boolean = false,
     var currentPage: String = "",
-    var apiKey: String = "AIzaSyDvPIWGy09LStmBDH4BBP0KJbXnPVC2Wpk"
 )

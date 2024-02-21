@@ -61,7 +61,6 @@ fun Setting(navController: NavController, viewModel: SaathiViewModel, uiState: S
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingDisplay(viewModel: SaathiViewModel,uiState: State){
-    var text by remember { mutableStateOf("") }
     var text2 by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
@@ -79,22 +78,6 @@ fun SettingDisplay(viewModel: SaathiViewModel,uiState: State){
                 .width(311.dp)
         )
 
-        Text(
-            text = "Api Key: ${uiState.apiKey}",
-            fontSize = 12.sp
-        )
-
-        OutlinedTextField(
-            value = text,
-            onValueChange ={
-                text = it
-            },
-            label = { Text(text ="API")}
-        )
-
-        Button(onClick = {viewModel.updateAPI(text)}){
-            Text("Change Api")
-        }
 
         OutlinedTextField(
             value = text2,

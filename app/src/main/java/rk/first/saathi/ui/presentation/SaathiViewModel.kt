@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.ai.client.generativeai.BuildConfig
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import com.google.android.gms.auth.api.phone.SmsRetriever
@@ -70,17 +71,13 @@ class SaathiViewModel @Inject constructor(
 
     val importantKeywords = mutableListOf<String>(
         "hospital",
-        "college",
-        "office",
-        "deposit",
-        "withdraw",
-        "pharmacy",
-        "garden",
         "department",
         "computer",
         "electronics",
         "mechanical"
     )
+
+    private val apiKey:String = BuildConfig.apikey
 
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
@@ -98,14 +95,14 @@ class SaathiViewModel @Inject constructor(
         // Use a model that's applicable for your use case (see "Implement basic use cases" below)
         modelName = "gemini-pro",
         // Access your API key as a Build Configuration variable (see "Set up your API key" above)
-        apiKey = state.value.apiKey
+        apiKey = apiKey
     )
 
     val generativeModel = GenerativeModel(
         // For text-and-images input (multimodal), use the gemini-pro-vision model
         modelName = "gemini-pro-vision",
         // Access your API key as a Build Configuration variable (see "Set up your API key" above)
-        apiKey = state.value.apiKey
+        apiKey = apiKey
     )
 
     fun ScenerioDesc(
@@ -130,8 +127,7 @@ class SaathiViewModel @Inject constructor(
 
                         val outputStream = ByteArrayOutputStream()
 
-                        val prompt =
-                            "You are a assistant for blind person accurately describe the scenario in image"
+                        val prompt = "Role : You are a personal assistant for a blind individual. Describe the image in such a way that you help him navigate efficiently. If the image has any kind of board like a sign board, information board or direction board, please explain it. Otherwise simply describe the image."
 
                         var quality = 90 // Initial quality
 
@@ -181,50 +177,6 @@ class SaathiViewModel @Inject constructor(
 //                        Log.d("Output", response.text.toString())
                         speak(response.text.toString())
                     }
-
-//                    val image1 = image.toBitmap()
-//
-//                    val outputStream = ByteArrayOutputStream()
-//                    var quality = 90 // Initial quality
-//
-//                    Log.d("Image Size","${image1.width},${image1.height}")
-//
-//                    val resizedBitmap = if (image1.width > 3072 || image1.height > 3072) {
-//                        val aspectRatio = image1.width.toFloat() /image1.height.toFloat()
-//                        val newWidth = if (image1.width > image1.height) 3072 else (3072 * aspectRatio).toInt()
-//                        val newHeight = if (image1.height > image1.width) 3072 else (3072 / aspectRatio).toInt()
-//                        Bitmap.createScaledBitmap(image1, newWidth, newHeight, false)
-//                    } else {
-//                        image1
-//                    }
-//
-//                    resizedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
-//
-//                    while (outputStream.toByteArray().size > 1 * 1024 && quality > 0) {
-//                        // Reduce quality until the image size is less than 4 MB
-//                        Log.d("Image Size","${outputStream.toByteArray().size}")
-//                        quality -= 10 // Adjust compression quality as needed
-//                        outputStream.reset()
-//                        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
-//                    }
-//
-//                    Log.d("Image Size","${outputStream.toByteArray().size}")
-//
-//                    Log.d("Image Size","${resizedBitmap.width},${resizedBitmap.height}")
-//
-//                    val inputContent = content {
-//                        image(resizedBitmap)
-//                        text("Describe the Scenario in the Image")
-//                    }
-//
-//
-//                    viewModelScope.launch {
-//                        val response = generativeModel.generateContent(inputContent)
-//                        print(response.text)
-//                        Log.d("Output", response.text.toString())
-//                    }
-
-                    //onPhotoTaken(image.toBitmap())
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -413,13 +365,6 @@ class SaathiViewModel @Inject constructor(
         TextToSpeech(app) {
             if (it != TextToSpeech.ERROR) {
                 tts.language = Locale.ENGLISH
-                //tts.voice = tts.voices.find { it.name == "hi-IN-SMTf00" } ?: tts.defaultVoice
-                //tts.setVoice(tts.voices.find { it.name == "en-IN-Neural2-B" } ?: tts.defaultVoice)
-//                Log.d("Voice",tts.voice.name)
-//                for(voice in tts.voices)
-//                {
-//                    Log.d("List of Voices",voice.name)
-//                }
             }
         }
     }
@@ -449,23 +394,6 @@ class SaathiViewModel @Inject constructor(
             )
         }
     }
-
-//    fun onNameEntered(name : String){
-//        _loginState.update {
-//            it.copy(name = name)
-//        }
-//    }
-
-//    fun userName(): String {
-//        return loginState.value.name
-//    }
-//    fun userCountry(): String {
-//        return loginState.value.country
-//    }
-//    fun userNumber(): String {
-//        return loginState.value.number.toString()
-//    }
-
     fun checkState(value: Int): Boolean {
         return when (value) {
             2 -> {
@@ -643,16 +571,8 @@ class SaathiViewModel @Inject constructor(
 
     fun otpSend(number: Number) {
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                // This callback will be invoked in two situations:
-                // 1 - Instant verification. In some cases the phone number can be instantly
-                //     verified without needing to send or enter a verification code.
-                // 2 - Auto-retrieval. On some devices Google Play services can automatically
-                //     detect the incoming verification SMS and perform verification without
-                //     user action.
-//                Log.d(TAG, "onVerificationCompleted:$credential")
-//                signInWithPhoneAuthCredential(credential)
+                signInWithPhoneAuthCredential(credential)
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
@@ -712,14 +632,6 @@ class SaathiViewModel @Inject constructor(
 
     fun logOut() {
         Firebase.auth.signOut()
-    }
-
-    fun updateAPI(value: String) {
-        if (value != "" && value != " ") {
-            _state.update {
-                it.copy(apiKey = value)
-            }
-        }
     }
 
     fun changeScreenSpeak(title: String) {

@@ -32,7 +32,7 @@ class OcrImageAnalyzer(
 private fun runTextRecognition(image: InputImage,state: State,viewModel: SaathiViewModel):String {
     val options = TextRecognizerOptions.DEFAULT_OPTIONS
     val recognizer = TextRecognition.getClient(options)
-    var resultText = "D"
+    var resultText = ""
 
     recognizer.process(image)
         .addOnSuccessListener { texts ->
@@ -68,7 +68,6 @@ private fun runTextRecognition(image: InputImage,state: State,viewModel: SaathiV
                     }
                 }
             }
-            //processTextRecognitionResult(texts!!)
         }
         .addOnFailureListener { e -> // Task failed with an exception
             e.printStackTrace()
@@ -76,22 +75,3 @@ private fun runTextRecognition(image: InputImage,state: State,viewModel: SaathiV
     return resultText
 }
 
-//private fun processTextRecognitionResult(texts: Text) {
-//    val blocks: List<Text.TextBlock> = texts.getTextBlocks()
-//    //val context = LocalContext.current
-//    if (blocks.size == 0) {
-//       // Toast.makeText(context,"No text found", Toast.LENGTH_LONG)
-//        return
-//    }
-//
-//    for (i in blocks.indices) {
-//        val lines: List<Text.Line> = blocks[i].getLines()
-//        for (j in lines.indices) {
-//            val elements: List<Text.Element> = lines[j].getElements()
-//            for (k in elements.indices) {
-//                val textGraphic = elements[k]
-//                Log.d("TAG","$textGraphic")
-//            }
-//        }
-//    }
-//}
