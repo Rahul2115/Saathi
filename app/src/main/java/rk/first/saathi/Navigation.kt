@@ -23,30 +23,30 @@ fun Navigation(viewModel: SaathiViewModel) {
     val uiState by viewModel.state.collectAsState()
     val logState by viewModel.loginState.collectAsState()
 
-    NavHost(navController = navController, startDestination = if(viewModel.auth.currentUser!=null){Screen.Home.route}else{Screen.MainScreen.route}){
+    NavHost(navController = navController, startDestination = Screen.Learn.route){
         composable(route = Screen.MainScreen.route) {
-                MainScreen(navController=navController)
+            MainScreen(navController=navController)
         }
         composable(route = Screen.Login.route) {
-                Login(navController=navController,viewModel,logState)
+            Login(navController=navController,viewModel,logState)
         }
         composable(route = Screen.Home.route){
-                Home(navController=navController,viewModel,uiState)
+            Home(navController=navController,viewModel,uiState)
         }
         composable(route = Screen.Find.route){
-                Find(navController=navController,uiState,viewModel)
+            Find(navController=navController,uiState,viewModel)
         }
         composable(route = Screen.Learn.route){
-                Learn(navController=navController,uiState,viewModel)
+            Learn(navController=navController,uiState,viewModel)
         }
         composable(route = Screen.LOOK.route){
-                LOOK(navController = navController, uiState, viewModel)
+            LOOK(navController = navController, uiState, viewModel)
         }
         composable(route = Screen.Setting.route){
-                Setting(navController = navController,viewModel,uiState)
+            Setting(navController = navController,viewModel,uiState)
         }
         composable(route = Screen.Read.route){
-                Read(navController = navController,uiState,viewModel)
+            Read(navController = navController,uiState,viewModel)
         }
     }
 }

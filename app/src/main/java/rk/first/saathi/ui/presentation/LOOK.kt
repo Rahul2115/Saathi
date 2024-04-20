@@ -66,7 +66,8 @@ fun LOOK(navController: NavController, state:State, viewModel: SaathiViewModel) 
                 BottomNavItem.LOOK,
                 BottomNavItem.Read,
             )
-            HomeFooter(itemslist = itemList,navController,viewModel)
+            //HomeFooter(itemslist = itemList,navController,viewModel)
+            HomeFooter2(navController = navController,viewModel)
         },
         floatingActionButton = {
             HomeHelp()
@@ -137,12 +138,12 @@ fun DESCDisplay(interactionSource: MutableInteractionSource,state: State,viewMod
                     viewModel.changeScreenSpeak("home")
                     viewModel.updateScreen(Screen.Home.route)
                     navController.navigate(Screen.Home.route)
-                          },
+                },
                 shape = CircleShape,
                 containerColor = Color(0xFF2B0E48),
                 contentColor = Color(0xFFFEE990)
             ) {
-                Icon(painter = painterResource(id = R.drawable.home), "Large floating action button"
+                Icon(painter = painterResource(id = R.drawable.home), "Home"
                     , modifier = Modifier.height(50.dp))
             }
 
@@ -154,7 +155,7 @@ fun DESCDisplay(interactionSource: MutableInteractionSource,state: State,viewMod
                 containerColor = Color.White,
                 modifier = Modifier.padding(start = 30.dp)
             ) {
-                Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
+                Icon(painter = painterResource(id = R.drawable.cam), "Click picture"
                     , modifier = Modifier.height(50.dp))
             }
 

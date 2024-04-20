@@ -2,6 +2,7 @@ package rk.first.saathi.ui.presentation
 
 import android.media.MediaPlayer
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -13,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
@@ -28,6 +31,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import rk.first.saathi.R
@@ -45,12 +50,11 @@ fun Learn(navController: NavController, state:State, viewModel: SaathiViewModel)
                 BottomNavItem.Learn,
                 BottomNavItem.Find,
             )
-            HomeFooter(itemslist = itemList,navController,viewModel)
+//            HomeFooter(itemslist = itemList,navController,viewModel)
+            HomeFooter2(navController = navController,viewModel)
         },
-        floatingActionButton = {
-            HomeHelp()
-        }
-    ) { innerPadding ->
+
+        ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -92,46 +96,53 @@ fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
             .fillMaxSize(),
     )
     {
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 60.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        )
+        {
+            Image(
+                painter = painterResource(id = R.drawable.file),
+                contentDescription = null,
+                modifier = Modifier
+                    .height(256.dp)
+                    .width(311.dp)
+            )
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 20.dp, bottom = 20.dp),
-            horizontalArrangement = Arrangement.Start,
+                .padding(bottom = 20.dp),
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Bottom
         )
         {
-            LargeFloatingActionButton(
-                onClick = {
-                         viewModel.changeScreenSpeak("home")
-                         viewModel.updateScreen(Screen.Home.route)
-                         navController.navigate(Screen.Home.route)
-                },
-                shape = CircleShape,
-                containerColor = Color(0xFF2B0E48),
-                contentColor = Color(0xFFFEE990)
-            ) {
-                Icon(painter = painterResource(id = R.drawable.home), "Large floating action button"
-                    , modifier = Modifier.height(50.dp))
-            }
-
             LargeFloatingActionButton(
                 onClick = {
                 },
                 interactionSource = interactionSource,
                 shape = CircleShape,
                 containerColor = Color.White,
-                modifier = Modifier.padding(start = 30.dp)
+                modifier = Modifier
+                    .clearAndSetSemantics {
+                        contentDescription = "Learn Mic Button. Double tap and hold to Speak. Double tap to stop speaking"
+                    }.height(120.dp).width(120.dp),
             ) {
                 if(isPressed){
-                    var mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
-                    mediaPlayer.start() // no need to call prepare(); create() does that for you
-                    Log.d("Voice","Listening")
-                    Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
+                    if(!viewModel.tts.isSpeaking){
+                        var mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
+                        mediaPlayer.start() // no need to call prepare(); create() does that for you
+                    }
+                    Icon(painter = painterResource(id = R.drawable.mic2), "Mic"
                         , modifier = Modifier.height(50.dp))
-
                     viewModel.learnListen()
                 }else{
-                    Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
+                    Icon(painter = painterResource(id = R.drawable.mic), "Mic"
                         , modifier = Modifier.height(50.dp))
 
                     viewModel.speechRecognizer.stopListening()

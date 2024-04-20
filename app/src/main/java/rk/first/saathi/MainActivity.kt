@@ -43,13 +43,13 @@ class MainActivity : ComponentActivity() {
         super.onPause()
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if(keyCode == KeyEvent.KEYCODE_VOLUME_UP){
-            if(viewModel.state.value.currentPage == "look"){
-                viewModel.clickStateValue(true)
-            }
-        }
-        return super.onKeyDown(keyCode, event)
-    }
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+//        if(keyCode == KeyEvent.KEYCODE_VOLUME_UP){
+//            if(viewModel.state.value.currentPage == "look"){
+//                viewModel.clickStateValue(true)
+//            }
+//        }
+//        return super.onKeyDown(keyCode, event)
+//    }
 }
 

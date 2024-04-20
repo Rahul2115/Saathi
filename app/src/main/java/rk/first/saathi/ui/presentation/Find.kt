@@ -48,7 +48,8 @@ fun Find(navController: NavController,state:State,viewModel: SaathiViewModel) {
                 BottomNavItem.Find,
                 BottomNavItem.Home,
             )
-            HomeFooter(itemslist = itemList,navController,viewModel)
+            // HomeFooter(itemslist = itemList,navController,viewModel)\
+            HomeFooter2(navController = navController,viewModel)
         },
         floatingActionButton = {
             HomeHelp()
@@ -102,14 +103,14 @@ fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
         .fillMaxWidth()
         .height(74.dp)
         .background(gradient))
-        {
-            Log.d("TextRead",state.text)
+    {
+        Log.d("TextRead",state.text)
 
-            Text(
-                text = state.text,
-                modifier = Modifier.align(Alignment.Center)
-            )
-            viewModel.speak(text = state.text)
+        Text(
+            text = state.text,
+            modifier = Modifier.align(Alignment.Center)
+        )
+        viewModel.speak(text = state.text)
     }
 
     Box(
@@ -133,7 +134,7 @@ fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
                     viewModel.changeScreenSpeak("home")
                     viewModel.updateScreen(Screen.Home.route)
                     navController.navigate(Screen.Home.route)
-                          },
+                },
                 shape = CircleShape,
                 containerColor = Color(0xFF2B0E48),
                 contentColor = Color(0xFFFEE990)

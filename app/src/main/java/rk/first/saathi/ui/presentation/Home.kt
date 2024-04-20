@@ -4,12 +4,9 @@ import android.media.MediaPlayer
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -17,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BottomAppBar
@@ -39,6 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,8 +57,10 @@ fun Home(navController: NavController,viewModel: SaathiViewModel,uiState: State)
                 BottomNavItem.Find,
                 BottomNavItem.Home,
                 BottomNavItem.LOOK,
+                BottomNavItem.Read,
+                BottomNavItem.Learn
             )
-            HomeFooter(itemslist = itemList,navController = navController,viewModel)
+            HomeFooter2(navController = navController,viewModel)
         },
         floatingActionButton = {
             HomeHelp()
@@ -103,30 +103,32 @@ fun HomeButtons(isPressed: Boolean,interactionSource:MutableInteractionSource,vi
             onClick = {viewModel.logOut()},
             shape = CircleShape,
             containerColor = Color(0xFF2B0E48),
-            contentColor = Color(0xFFFEE990)
+            contentColor = Color(0xFFFEE990),
         ) {
-            Icon(painter = painterResource(id = R.drawable.home), "Large floating action button"
+            Icon(painter = painterResource(id = R.drawable.home), "Home "
                 , modifier = Modifier.height(50.dp))
         }
 
         LargeFloatingActionButton(
-            onClick = {
-            },
             interactionSource = interactionSource,
             shape = CircleShape,
             containerColor = Color.White,
             modifier = Modifier
                 .padding(start = 30.dp)
+                .clearAndSetSemantics {
+                    contentDescription = "Mic Button. Double tap and hold to Speak"
+                },
+            onClick = {}
         ) {
             if(isPressed){
                 var mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
                 mediaPlayer.start() // no need to call prepare(); create() does that for you
                 Log.d("Voice","Listening")
-                Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
+                Icon(painter = painterResource(id = R.drawable.mic), "Mic"
                     , modifier = Modifier.height(50.dp))
                 viewModel.homeListen()
             }else{
-                Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
+                Icon(painter = painterResource(id = R.drawable.mic), "Mic"
                     , modifier = Modifier.height(50.dp))
                 viewModel.speechRecognizer.stopListening()
             }
@@ -205,6 +207,60 @@ fun HomeFooter(itemslist:List<BottomNavItem>,navController: NavController,viewMo
     ) {
         BottomNavigation(itemList = itemslist, navController = navController, viewModel)
     }
+    //    BottomAppBar(
+    //        containerColor = Color(0xFFC3B36F),
+    //        contentColor = Color(0xFFFEE990),
+    //    ) {
+    //        Button(onClick = { /*TODO*/ }) {
+    //
+    //        }
+    //    }
+}
+
+@Composable
+fun HomeFooter2(navController: NavController,viewModel: SaathiViewModel){
+    val itemsList = listOf(
+        BottomNavItem.Learn,
+        BottomNavItem.LOOK,
+        BottomNavItem.Read,
+        BottomNavItem.Find,
+//        BottomNavItem.Home
+    )
+
+    BottomAppBar(
+        containerColor = Color(0xFFC3B36F),
+        contentColor = Color(0xFFFEE990),
+    ) {
+        NavigationBar(
+            containerColor = Color(0xFFC3B36F),
+            contentColor = Color(0xFFFEE990),
+            modifier = Modifier.padding(start = 10.dp, end = 10.dp)
+        ){
+            itemsList.forEach { item ->
+                NavigationBarItem(
+                    // The icon resource
+                    icon = {
+                        Icon(painter = painterResource(id = item.icon), contentDescription = item.title
+                            , modifier = Modifier.height(30.dp))
+                    },
+
+                    // Display if the icon it is select or not
+                    selected = (item.title.lowercase() == navController.currentDestination?.route?.lowercase()),
+
+                    // Click listener for the icon
+                    onClick = {
+                        viewModel.changeScreenSpeak(item.title)
+                        viewModel.updateScreen(item.title.lowercase())
+                        if (item.title.lowercase() != navController.currentDestination?.route?.lowercase()) {
+                            navController.navigate(item.title.lowercase())
+                        }
+                    },
+                    // Control all the colors of the icon
+                    colors = NavigationBarItemDefaults.colors(indicatorColor = Color(0xFFFEE990))
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -235,24 +291,10 @@ fun HomeDisplay(viewModel: SaathiViewModel){
     {
         Image(
             painter = painterResource(id = R.drawable.file),
-            contentDescription = "Saathi Logo",
+            contentDescription = null,
             modifier = Modifier
                 .height(256.dp)
                 .width(311.dp)
         )
-
-//        if(isPressed){
-//            viewModel.speak("Saathi is listening")
-//            Text(
-//                text = "Saathi is listening...",
-//                style = TextStyle(
-//                    fontSize = 20.sp,
-//                    fontWeight = FontWeight(400),
-//                    color = Color(0xFF000000),
-//                    textAlign = TextAlign.Center,
-//                ),
-//                modifier = Modifier.padding(top = 25.dp)
-//            )
-//        }
     }
 }

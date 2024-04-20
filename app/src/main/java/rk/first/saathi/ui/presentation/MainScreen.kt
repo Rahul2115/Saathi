@@ -136,7 +136,7 @@ fun Display(navController:NavController){
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        
+
         Image(
             painter = painterResource(id = R.drawable.file),
             contentDescription = "Saathi Logo",

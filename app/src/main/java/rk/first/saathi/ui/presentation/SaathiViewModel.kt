@@ -77,7 +77,7 @@ class SaathiViewModel @Inject constructor(
         "mechanical"
     )
 
-    private val apiKey:String = BuildConfig.apikey
+    private val apiKey:String = "AIzaSyAD_Dl8BTTpYNPAIsjf_21wabLc7zHrz7s"
 
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
@@ -197,7 +197,7 @@ class SaathiViewModel @Inject constructor(
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         intent.putExtra(
             RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
         )
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
@@ -292,52 +292,49 @@ class SaathiViewModel @Inject constructor(
     }
 
     fun learnListen() {
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        intent.putExtra(
-            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-        )
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-        speechRecognizer.setRecognitionListener(object : RecognitionListener {
-            override fun onReadyForSpeech(p0: Bundle?) {
-            }
+        if(tts.isSpeaking){
+            tts.stop()
+            speak("Stopped Speaking")
+        }
+        else {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            intent.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            speechRecognizer.setRecognitionListener(object : RecognitionListener {
+                override fun onReadyForSpeech(p0: Bundle?) {
+                }
 
-            override fun onBeginningOfSpeech() {
-            }
+                override fun onBeginningOfSpeech() {
+                }
 
-            override fun onRmsChanged(p0: Float) {
+                override fun onRmsChanged(p0: Float) {
 
-            }
+                }
 
-            override fun onBufferReceived(p0: ByteArray?) {
+                override fun onBufferReceived(p0: ByteArray?) {
 
-            }
+                }
 
-            override fun onEndOfSpeech() {
+                override fun onEndOfSpeech() {
 
-            }
+                }
 
-            override fun onError(p0: Int) {
+                override fun onError(p0: Int) {
 
-            }
+                }
 
-            override fun onResults(bundle: Bundle?) {
-                Log.d("Voice Input", "In result")
-                bundle?.let {
-                    val result = it.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                    result?.get(0)?.let { it1 ->
-                        Log.d("Voice Input", it1)
-                        Toast.makeText(app, it1, Toast.LENGTH_SHORT).show()
-                        if (it1.toLowerCase(Locale.getDefault()) == "stop") {
-                            if (tts.isSpeaking) {
-                                tts.stop()
-                            } else {
-                            }
-
-                        } else {
+                override fun onResults(bundle: Bundle?) {
+                    Log.d("Voice Input", "In result")
+                    bundle?.let {
+                        val result = it.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                        result?.get(0)?.let { it1 ->
+                            Log.d("Voice Input", it1)
+                            //Toast.makeText(app, it1, Toast.LENGTH_SHORT).show()
                             speak(it1)
-                            val prompt = "Please answer the question asked in one-two lines. Return the response only in terms of Alphanumeric characters. Question : $it1 "
-
+                            val prompt = "$it1 "
                             viewModelScope.launch {
                                 val response = model.generateContent(prompt)
                                 Log.d("Output", response.text.toString())
@@ -348,20 +345,20 @@ class SaathiViewModel @Inject constructor(
                         }
                     }
                 }
-            }
 
-            override fun onPartialResults(p0: Bundle?) {
+                override fun onPartialResults(p0: Bundle?) {
 
-            }
+                }
 
-            override fun onEvent(p0: Int, p1: Bundle?) {
+                override fun onEvent(p0: Int, p1: Bundle?) {
 
-            }
-        })
-        speechRecognizer.startListening(intent)
+                }
+            })
+            speechRecognizer.startListening(intent)
+        }
     }
 
-    private val tts: TextToSpeech by lazy {
+    val tts: TextToSpeech by lazy {
         TextToSpeech(app) {
             if (it != TextToSpeech.ERROR) {
                 tts.language = Locale.ENGLISH

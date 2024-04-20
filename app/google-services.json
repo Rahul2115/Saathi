@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "310691442859",
+    "project_id": "saathi-ccc60",
+    "storage_bucket": "saathi-ccc60.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:310691442859:android:144647d49d0deafff907ee",
+        "android_client_info": {
+          "package_name": "rk.first.saathi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnFlmV1vrh8K_ho43jsIuLhsF8HDxeHKQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
