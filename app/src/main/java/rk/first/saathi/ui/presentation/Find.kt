@@ -1,10 +1,12 @@
 package rk.first.saathi.ui.presentation
 
+import android.media.MediaPlayer
 import android.util.Log
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,6 +33,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
@@ -43,16 +48,7 @@ fun Find(navController: NavController,state:State,viewModel: SaathiViewModel) {
     viewModel.updatePageState(navController.currentDestination?.route?.lowercase())
     Scaffold(
         bottomBar = {
-            val itemList = listOf(
-                BottomNavItem.Learn,
-                BottomNavItem.Find,
-                BottomNavItem.Home,
-            )
-            // HomeFooter(itemslist = itemList,navController,viewModel)\
             HomeFooter2(navController = navController,viewModel)
-        },
-        floatingActionButton = {
-            HomeHelp()
         }
     ) { innerPadding ->
         Column(
@@ -70,6 +66,8 @@ fun Find(navController: NavController,state:State,viewModel: SaathiViewModel) {
 @Composable
 fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel,navController: NavController)
 {
+    val isPressed by interactionSource.collectIsPressedAsState()
+
     val context = LocalContext.current
 
     var textRead by remember {
@@ -124,36 +122,35 @@ fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 20.dp, bottom = 20.dp),
-            horizontalArrangement = Arrangement.Start,
+                .padding(bottom = 20.dp),
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Bottom
         )
         {
             LargeFloatingActionButton(
                 onClick = {
-                    viewModel.changeScreenSpeak("home")
-                    viewModel.updateScreen(Screen.Home.route)
-                    navController.navigate(Screen.Home.route)
-                },
-                shape = CircleShape,
-                containerColor = Color(0xFF2B0E48),
-                contentColor = Color(0xFFFEE990)
-            ) {
-                Icon(painter = painterResource(id = R.drawable.home), "Large floating action button"
-                    , modifier = Modifier.height(50.dp))
-            }
-
-            LargeFloatingActionButton(
-                onClick = {
-
                 },
                 interactionSource = interactionSource,
                 shape = CircleShape,
                 containerColor = Color.White,
-                modifier = Modifier.padding(start = 30.dp)
+                modifier = Modifier
+                    .clearAndSetSemantics {
+                    contentDescription = "Find Mic Button. Double tap and hold to Speak. swipe when speaking to stop"
+                }.height(120.dp).width(120.dp)
             ) {
-                Icon(painter = painterResource(id = R.drawable.mic), "Large floating action button"
-                    , modifier = Modifier.height(50.dp))
+                if(isPressed){
+                    if(!viewModel.tts.isSpeaking){
+                        var mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
+                        mediaPlayer.start() // no need to call prepare(); create() does that for you
+                    }
+                    Icon(painter = painterResource(id = R.drawable.mic2), "Mic"
+                        , modifier = Modifier.height(55.dp))
+                    viewModel.findListen()
+                }else{
+                    Icon(painter = painterResource(id = R.drawable.mic), "Mic"
+                        , modifier = Modifier.height(55.dp))
+                    viewModel.speechRecognizer.stopListening()
+                }
             }
         }
     }

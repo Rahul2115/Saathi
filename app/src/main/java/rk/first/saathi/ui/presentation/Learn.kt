@@ -45,15 +45,8 @@ fun Learn(navController: NavController, state:State, viewModel: SaathiViewModel)
     viewModel.updatePageState(navController.currentDestination?.route?.lowercase())
     Scaffold(
         bottomBar = {
-            val itemList = listOf(
-                BottomNavItem.Empty,
-                BottomNavItem.Learn,
-                BottomNavItem.Find,
-            )
-//            HomeFooter(itemslist = itemList,navController,viewModel)
             HomeFooter2(navController = navController,viewModel)
         },
-
         ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -130,8 +123,8 @@ fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
                 containerColor = Color.White,
                 modifier = Modifier
                     .clearAndSetSemantics {
-                        contentDescription = "Learn Mic Button. Double tap and hold to Speak. Double tap to stop speaking"
-                    }.height(120.dp).width(120.dp),
+                        contentDescription = "Learn Mic Button. Double tap and hold to Speak. swipe when speaking to stop"
+                    }.height(120.dp).width(120.dp)
             ) {
                 if(isPressed){
                     if(!viewModel.tts.isSpeaking){
@@ -139,11 +132,11 @@ fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
                         mediaPlayer.start() // no need to call prepare(); create() does that for you
                     }
                     Icon(painter = painterResource(id = R.drawable.mic2), "Mic"
-                        , modifier = Modifier.height(50.dp))
+                        , modifier = Modifier.height(55.dp))
                     viewModel.learnListen()
                 }else{
                     Icon(painter = painterResource(id = R.drawable.mic), "Mic"
-                        , modifier = Modifier.height(50.dp))
+                        , modifier = Modifier.height(55.dp))
 
                     viewModel.speechRecognizer.stopListening()
                 }

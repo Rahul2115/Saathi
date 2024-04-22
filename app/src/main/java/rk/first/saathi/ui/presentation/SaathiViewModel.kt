@@ -70,11 +70,6 @@ class SaathiViewModel @Inject constructor(
     lateinit private var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
 
     val importantKeywords = mutableListOf<String>(
-        "hospital",
-        "department",
-        "computer",
-        "electronics",
-        "mechanical"
     )
 
     private val apiKey:String = "AIzaSyAD_Dl8BTTpYNPAIsjf_21wabLc7zHrz7s"
@@ -127,7 +122,8 @@ class SaathiViewModel @Inject constructor(
 
                         val outputStream = ByteArrayOutputStream()
 
-                        val prompt = "Role : You are a personal assistant for a blind individual. Describe the image in such a way that you help him navigate efficiently. If the image has any kind of board like a sign board, information board or direction board, please explain it. Otherwise simply describe the image."
+                        val prompt =
+                            "Role : You are a personal assistant for a blind individual. Describe the image in such a way that you help him navigate efficiently. If the image has any kind of board like a sign board, information board or direction board, please explain it. Otherwise simply describe the image."
 
                         var quality = 90 // Initial quality
 
@@ -144,7 +140,11 @@ class SaathiViewModel @Inject constructor(
                             image1
                         }
 
-                        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+                        resizedBitmap.compress(
+                            Bitmap.CompressFormat.JPEG,
+                            quality,
+                            outputStream
+                        )
 
 //                        Log.d("Image Size", "${outputStream.toByteArray().size}")
 
@@ -185,6 +185,7 @@ class SaathiViewModel @Inject constructor(
                 }
             }
         )
+
     }
 
     fun updateScreen(value: String) {
@@ -294,7 +295,7 @@ class SaathiViewModel @Inject constructor(
     fun learnListen() {
         if(tts.isSpeaking){
             tts.stop()
-            speak("Stopped Speaking")
+            //speak("Stopped Speaking")
         }
         else {
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
@@ -352,6 +353,64 @@ class SaathiViewModel @Inject constructor(
 
                 override fun onEvent(p0: Int, p1: Bundle?) {
 
+                }
+            })
+            speechRecognizer.startListening(intent)
+        }
+    }
+
+    fun findListen() {
+        if(tts.isSpeaking){
+            tts.stop()
+            //speak("Stopped Speaking")
+        }
+        else {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            intent.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            speechRecognizer.setRecognitionListener(object : RecognitionListener {
+                override fun onReadyForSpeech(p0: Bundle?) {
+                }
+
+                override fun onBeginningOfSpeech() {
+                }
+
+                override fun onRmsChanged(p0: Float) {
+
+                }
+
+                override fun onBufferReceived(p0: ByteArray?) {
+
+                }
+
+                override fun onEndOfSpeech() {
+
+                }
+
+                override fun onError(p0: Int) {
+
+                }
+
+                override fun onResults(bundle: Bundle?) {
+                    Log.d("Voice Input", "In result")
+                    bundle?.let {
+                        val result = it.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                        result?.get(0)?.let { it1 ->
+                            Log.d("Voice Input", it1)
+                            //Toast.makeText(app, it1, Toast.LENGTH_SHORT).show()
+                            speak("Finding $it1")
+                            addKeywords(it1)
+                        }
+                    }
+                }
+
+                override fun onPartialResults(p0: Bundle?) {
+                }
+
+                override fun onEvent(p0: Int, p1: Bundle?) {
                 }
             })
             speechRecognizer.startListening(intent)
@@ -659,10 +718,10 @@ class SaathiViewModel @Inject constructor(
             if (title.lowercase(Locale.getDefault())
                     .equals("home") || title.lowercase(Locale.getDefault()).equals("learn")
             ) {
-                delay(2500L)
+                delay(2000L)
                 speak(title)
             } else {
-                delay(3000L)
+                delay(2000L)
                 if (state.value.currentPage.equals(title)) {
                     speak(title)
                 }
@@ -681,44 +740,36 @@ class SaathiViewModel @Inject constructor(
         val recognizer = TextRecognition.getClient(options)
         var resultText = "D"
 
-        if(tts.isSpeaking)
-        {
-            tts.stop()
-            speak("stopped speaking")
-        }
-        else {
-            controller.takePicture(
-                ContextCompat.getMainExecutor(app),
-                object : OnImageCapturedCallback() {
-                    override fun onCaptureSuccess(image: ImageProxy) {
-                        super.onCaptureSuccess(image)
-                        Log.d("Clicked", "Image Captured ${image.imageInfo}")
+        controller.takePicture(
+            ContextCompat.getMainExecutor(app),
+            object : OnImageCapturedCallback() {
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    super.onCaptureSuccess(image)
+                    Log.d("Clicked", "Image Captured ${image.imageInfo}")
 
-                        var mediaPlayer = MediaPlayer.create(app, R.raw.camera)
-                        mediaPlayer.start() // no need to call prepare(); create() does that for you
+                    var mediaPlayer = MediaPlayer.create(app, R.raw.camera)
+                    mediaPlayer.start() // no need to call prepare(); create() does that for you
 
-                        val inputImage = InputImage.fromBitmap(image.toBitmap(), 0)
+                    val inputImage = InputImage.fromBitmap(image.toBitmap(), 0)
 
-                        recognizer.process(inputImage)
-                            .addOnSuccessListener { texts ->
-                                resultText = texts.text
-                                //state.value.text = texts.text
-                                //viewModel.update(texts.text)
-                                Log.d("Text", resultText)
-                                speak(resultText)
-                            }
-                            .addOnFailureListener { e -> // Task failed with an exception
-                                e.printStackTrace()
-                            }
-
-                    }
-
-                    override fun onError(exception: ImageCaptureException) {
-                        super.onError(exception)
-                        Log.e("Camera", "Couldn't take Photo", exception)
-                    }
+                    recognizer.process(inputImage)
+                        .addOnSuccessListener { texts ->
+                            resultText = texts.text
+                            //state.value.text = texts.text
+                            //viewModel.update(texts.text)
+                            speak(resultText)
+                        }
+                        .addOnFailureListener { e -> // Task failed with an exception
+                            e.printStackTrace()
+                        }
                 }
-            )
-        }
+
+                override fun onError(exception: ImageCaptureException) {
+                    super.onError(exception)
+                    Log.e("Camera", "Couldn't take Photo", exception)
+                }
+            }
+        )
     }
+
 }
