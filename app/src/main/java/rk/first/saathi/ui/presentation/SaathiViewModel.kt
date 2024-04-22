@@ -72,7 +72,7 @@ class SaathiViewModel @Inject constructor(
     val importantKeywords = mutableListOf<String>(
     )
 
-    private val apiKey:String = "AIzaSyAD_Dl8BTTpYNPAIsjf_21wabLc7zHrz7s"
+    private val apiKey:String = "Api key"
 
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
