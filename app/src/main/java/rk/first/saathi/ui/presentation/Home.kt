@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.NavigationBar
@@ -43,23 +42,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import rk.first.saathi.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(navController: NavController,viewModel: SaathiViewModel,uiState: State) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    handleScreens(uiState,navController)
+    HandleScreens(uiState,navController)
     viewModel.updatePageState(navController.currentDestination?.route?.lowercase())
 
     Scaffold(
         bottomBar = {
-            val itemList = listOf(
-                BottomNavItem.Find,
-                BottomNavItem.Home,
-                BottomNavItem.LOOK,
-                BottomNavItem.Read,
-                BottomNavItem.Learn
-            )
             HomeFooter2(navController = navController,viewModel)
         },
         floatingActionButton = {
@@ -74,7 +65,7 @@ fun Home(navController: NavController,viewModel: SaathiViewModel,uiState: State)
         )
         {
             Header()
-            HomeDisplay(viewModel)
+            HomeDisplay()
             HomeButtons(isPressed,interactionSource,viewModel)
             // the color will change depending on the presence of a hover
         }
@@ -83,7 +74,7 @@ fun Home(navController: NavController,viewModel: SaathiViewModel,uiState: State)
 }
 
 @Composable
-fun handleScreens(uiState: State,navController: NavController){
+fun HandleScreens(uiState: State,navController: NavController){
     if(uiState.gotoScreen != "home") {
         navController.navigate(uiState.gotoScreen)
     }
@@ -121,7 +112,7 @@ fun HomeButtons(isPressed: Boolean,interactionSource:MutableInteractionSource,vi
             onClick = {}
         ) {
             if(isPressed){
-                var mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
+                val mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
                 mediaPlayer.start() // no need to call prepare(); create() does that for you
                 Log.d("Voice","Listening")
                 Icon(painter = painterResource(id = R.drawable.mic), "Mic"
@@ -152,18 +143,6 @@ fun BottomNavigation(itemList:List<BottomNavItem>,navController: NavController,v
             )
         }
     }
-
-//    LazyRow(){
-//        items(itemslist){item ->
-//            Text(
-//                text = item.title,
-//                color = Color(0xFF2B0E48),
-//                fontSize = 19.sp,
-//                fontWeight = FontWeight.Bold,
-//                modifier = Modifier.padding(start = 45.dp, end = 10.dp)
-//            )
-//        }
-//    }
 }
 
 @Composable
@@ -200,21 +179,13 @@ fun RowScope.AddItem(
 }
 
 @Composable
-fun HomeFooter(itemslist:List<BottomNavItem>,navController: NavController,viewModel: SaathiViewModel){
+fun HomeFooter(itemList:List<BottomNavItem>,navController: NavController,viewModel: SaathiViewModel){
     BottomAppBar(
         containerColor = Color(0xFFC3B36F),
         contentColor = Color(0xFFFEE990),
     ) {
-        BottomNavigation(itemList = itemslist, navController = navController, viewModel)
+        BottomNavigation(itemList = itemList, navController = navController, viewModel)
     }
-    //    BottomAppBar(
-    //        containerColor = Color(0xFFC3B36F),
-    //        contentColor = Color(0xFFFEE990),
-    //    ) {
-    //        Button(onClick = { /*TODO*/ }) {
-    //
-    //        }
-    //    }
 }
 
 @Composable
@@ -224,7 +195,6 @@ fun HomeFooter2(navController: NavController,viewModel: SaathiViewModel){
         BottomNavItem.LOOK,
         BottomNavItem.Read,
         BottomNavItem.Find,
-//        BottomNavItem.Home
     )
 
     BottomAppBar(
@@ -240,7 +210,7 @@ fun HomeFooter2(navController: NavController,viewModel: SaathiViewModel){
                 NavigationBarItem(
                     // The icon resource
                     icon = {
-                        Icon(painter = painterResource(id = item.icon), contentDescription = item.title
+                        Image(painter = painterResource(id = item.icon), contentDescription = item.title
                             , modifier = Modifier.height(30.dp))
                     },
 
@@ -280,7 +250,7 @@ fun HomeHelp(){
 }
 
 @Composable
-fun HomeDisplay(viewModel: SaathiViewModel){
+fun HomeDisplay(){
     Column(
         modifier = Modifier
             .fillMaxWidth()

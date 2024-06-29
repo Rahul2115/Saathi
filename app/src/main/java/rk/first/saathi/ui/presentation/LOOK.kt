@@ -1,12 +1,10 @@
-@file:Suppress("DEPRECATION")
-
 package rk.first.saathi.ui.presentation
 
 import android.util.Log
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,16 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -38,10 +31,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import rk.first.saathi.R
-import rk.first.saathi.Screen
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LOOK(navController: NavController, state:State, viewModel: SaathiViewModel) {
     viewModel.updatePageState(navController.currentDestination?.route?.lowercase())
@@ -72,14 +62,13 @@ fun LOOK(navController: NavController, state:State, viewModel: SaathiViewModel) 
                 .background(Color(0xFFFEE990)),
         )
         {
-            DESCDisplay(state, viewModel = viewModel,controller,navController)
+            DESCDisplay(state, viewModel = viewModel,controller)
         }
     }
 }
 
-
 @Composable
-fun DESCDisplay(state: State,viewModel: SaathiViewModel,controller:LifecycleCameraController,navController: NavController)
+fun DESCDisplay(state: State,viewModel: SaathiViewModel,controller:LifecycleCameraController)
 {
     val gradient = Brush.linearGradient(
         listOf(Color(0XFFFEE990),Color(0xFFF2D660))
@@ -116,7 +105,13 @@ fun DESCDisplay(state: State,viewModel: SaathiViewModel,controller:LifecycleCame
         {
             LargeFloatingActionButton(
                 onClick = {
-                    viewModel.ScenerioDesc(controller = controller)
+                    if (viewModel.checkConnectivity()){
+                        if(!viewModel.tts.isSpeaking){
+                            viewModel.ScenerioDesc(controller = controller)
+                        }
+                    }else{
+                        viewModel.speak("Make sure that WI-FI or mobile data is turned on, then try again")
+                    }
                 },
                 shape = CircleShape,
                 containerColor = Color.White,
@@ -124,7 +119,7 @@ fun DESCDisplay(state: State,viewModel: SaathiViewModel,controller:LifecycleCame
                     contentDescription = "Look click button. Double-tap to click the picture. swipe when speaking to stop"
                 }
             ) {
-                Icon(painter = painterResource(id = R.drawable.cam), "Click"
+                Image(painter = painterResource(id = R.drawable.cam), "Click"
                     , modifier = Modifier.height(60.dp))
             }
         }

@@ -21,7 +21,6 @@ class OcrImageAnalyzer(
                 .toBitmap()
             val inputImage = InputImage.fromBitmap(bitmap, 0)
             val results = runTextRecognition(inputImage,state, viewModel = viewModel)
-            //val results = classifier.classify(bitmap, rotationDegrees)
             onResults(results)
         }
         frameSkipCounter++
@@ -37,8 +36,6 @@ private fun runTextRecognition(image: InputImage,state: State,viewModel: SaathiV
     recognizer.process(image)
         .addOnSuccessListener { texts ->
             resultText = texts.text
-            //state.value.text = texts.text
-            //viewModel.update(texts.text)
             Log.d("State",state.text)
 
         for (block in texts.textBlocks) {

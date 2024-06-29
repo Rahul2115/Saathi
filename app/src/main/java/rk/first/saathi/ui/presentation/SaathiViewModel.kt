@@ -1,37 +1,32 @@
 package rk.first.saathi.ui.presentation
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Application
-import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaPlayer
-import android.net.Uri
+import android.net.ConnectivityManager
 import android.os.Bundle
-import android.provider.MediaStore
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
-import android.speech.tts.Voice
 import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.ImageCapture.OnImageCapturedCallback
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.view.LifecycleCameraController
-import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat.getSystemService
+import androidx.core.app.ActivityCompat.recreate
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.ai.client.generativeai.BuildConfig
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
-import com.google.android.gms.auth.api.phone.SmsRetriever
-import com.google.android.gms.auth.api.phone.SmsRetriever.SMS_RETRIEVED_ACTION
-import com.google.android.gms.common.api.CommonStatusCodes
-import com.google.android.gms.common.api.Status
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -46,14 +41,13 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
+import rk.first.saathi.MainActivity
 import rk.first.saathi.R
 import java.io.ByteArrayOutputStream
 import java.util.Locale
@@ -88,14 +82,14 @@ class SaathiViewModel @Inject constructor(
 
     val model = GenerativeModel(
         // Use a model that's applicable for your use case (see "Implement basic use cases" below)
-        modelName = "gemini-pro",
+        modelName = "gemini-1.5-flash",
         // Access your API key as a Build Configuration variable (see "Set up your API key" above)
         apiKey = apiKey
     )
 
     val generativeModel = GenerativeModel(
         // For text-and-images input (multimodal), use the gemini-pro-vision model
-        modelName = "gemini-pro-vision",
+        modelName = "gemini-1.5-flash",
         // Access your API key as a Build Configuration variable (see "Set up your API key" above)
         apiKey = apiKey
     )
@@ -111,9 +105,8 @@ class SaathiViewModel @Inject constructor(
             object : OnImageCapturedCallback() {
                 override fun onCaptureSuccess(image: ImageProxy) {
                     super.onCaptureSuccess(image)
-//                    Log.d("Clicked", "Image Captured ${image.imageInfo}")
 
-                    var mediaPlayer = MediaPlayer.create(app, R.raw.camera)
+                    val mediaPlayer = MediaPlayer.create(app, R.raw.camera)
                     mediaPlayer.start() // no need to call prepare(); create() does that for you
 
                     viewModelScope.launch {
@@ -123,11 +116,11 @@ class SaathiViewModel @Inject constructor(
                         val outputStream = ByteArrayOutputStream()
 
                         val prompt =
-                            "Role : You are a personal assistant for a blind individual. Describe the image in such a way that you help him navigate efficiently. If the image has any kind of board like a sign board, information board or direction board, please explain it. Otherwise simply describe the image."
+                            "Role : You are a personal assistant for a blind individual. Describe the image in such a way that you" +
+                                    " help him navigate efficiently. If the image has any kind of board like a sign board," +
+                                    " information board or direction board, please explain it. Otherwise simply describe the image."
 
                         var quality = 90 // Initial quality
-
-//                        Log.d("Image Resolution", "${image1.width},${image1.height}")
 
                         val resizedBitmap = if (image1.width > 1500 || image1.height > 1500) {
                             val aspectRatio = image1.width.toFloat() / image1.height.toFloat()
@@ -146,8 +139,6 @@ class SaathiViewModel @Inject constructor(
                             outputStream
                         )
 
-//                        Log.d("Image Size", "${outputStream.toByteArray().size}")
-
                         while (outputStream.toByteArray().size > 1 * 1024 * 1024 && quality > 0) {
                             // Reduce quality until the image size is less than 4 MB
                             Log.d("Image Size", "${outputStream.toByteArray().size}")
@@ -160,22 +151,14 @@ class SaathiViewModel @Inject constructor(
                             )
                         }
 
-//                        Log.d("Image Size Final", "${outputStream.toByteArray().size}")
-
-//                        Log.d(
-//                            "Image Resolution Final",
-//                            "${resizedBitmap.width},${resizedBitmap.height}"
-//                        )
-
                         val inputContent = content {
                             image(resizedBitmap)
                             text(prompt)
                         }
                         speak("Saathi is Analyzing the Image Please be patient. ")
                         val response = generativeModel.generateContent(inputContent)
-//                        print(response.text)
-//                        Log.d("Output", response.text.toString())
                         speak(response.text.toString())
+                        Log.d("Response",response.text.toString())
                     }
                 }
 
@@ -295,7 +278,6 @@ class SaathiViewModel @Inject constructor(
     fun learnListen() {
         if(tts.isSpeaking){
             tts.stop()
-            //speak("Stopped Speaking")
         }
         else {
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
@@ -307,38 +289,24 @@ class SaathiViewModel @Inject constructor(
             speechRecognizer.setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(p0: Bundle?) {
                 }
-
                 override fun onBeginningOfSpeech() {
                 }
-
                 override fun onRmsChanged(p0: Float) {
-
                 }
-
                 override fun onBufferReceived(p0: ByteArray?) {
-
                 }
-
                 override fun onEndOfSpeech() {
-
                 }
-
                 override fun onError(p0: Int) {
-
                 }
-
                 override fun onResults(bundle: Bundle?) {
-                    Log.d("Voice Input", "In result")
                     bundle?.let {
                         val result = it.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         result?.get(0)?.let { it1 ->
-                            Log.d("Voice Input", it1)
-                            //Toast.makeText(app, it1, Toast.LENGTH_SHORT).show()
                             speak(it1)
-                            val prompt = "$it1 "
+                            val prompt = "Since you will be speaking the answer out and the user will be hearing it rather than reading it, please limit your response to plain language and avoid using any symbols or special characters. Question: $it1 "
                             viewModelScope.launch {
                                 val response = model.generateContent(prompt)
-                                Log.d("Output", response.text.toString())
                                 while (tts.isSpeaking) {
                                 }
                                 speak(response.text.toString())
@@ -348,11 +316,9 @@ class SaathiViewModel @Inject constructor(
                 }
 
                 override fun onPartialResults(p0: Bundle?) {
-
                 }
 
                 override fun onEvent(p0: Int, p1: Bundle?) {
-
                 }
             })
             speechRecognizer.startListening(intent)
@@ -362,7 +328,6 @@ class SaathiViewModel @Inject constructor(
     fun findListen() {
         if(tts.isSpeaking){
             tts.stop()
-            //speak("Stopped Speaking")
         }
         else {
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
@@ -374,26 +339,16 @@ class SaathiViewModel @Inject constructor(
             speechRecognizer.setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(p0: Bundle?) {
                 }
-
                 override fun onBeginningOfSpeech() {
                 }
-
                 override fun onRmsChanged(p0: Float) {
-
                 }
-
                 override fun onBufferReceived(p0: ByteArray?) {
-
                 }
-
                 override fun onEndOfSpeech() {
-
                 }
-
                 override fun onError(p0: Int) {
-
                 }
-
                 override fun onResults(bundle: Bundle?) {
                     Log.d("Voice Input", "In result")
                     bundle?.let {
@@ -406,10 +361,8 @@ class SaathiViewModel @Inject constructor(
                         }
                     }
                 }
-
                 override fun onPartialResults(p0: Bundle?) {
                 }
-
                 override fun onEvent(p0: Int, p1: Bundle?) {
                 }
             })
@@ -755,8 +708,6 @@ class SaathiViewModel @Inject constructor(
                     recognizer.process(inputImage)
                         .addOnSuccessListener { texts ->
                             resultText = texts.text
-                            //state.value.text = texts.text
-                            //viewModel.update(texts.text)
                             speak(resultText)
                         }
                         .addOnFailureListener { e -> // Task failed with an exception
@@ -770,6 +721,12 @@ class SaathiViewModel @Inject constructor(
                 }
             }
         )
+    }
+
+   fun checkConnectivity(): Boolean {
+        val manager = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        manager.activeNetworkInfo ?: return false
+        return true
     }
 
 }

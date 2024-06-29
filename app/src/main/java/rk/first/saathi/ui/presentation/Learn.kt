@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,9 +33,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import rk.first.saathi.R
-import rk.first.saathi.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Learn(navController: NavController, state:State, viewModel: SaathiViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -55,14 +50,14 @@ fun Learn(navController: NavController, state:State, viewModel: SaathiViewModel)
                 .background(Color(0xFFFEE990)),
         )
         {
-            LLMDisplay(interactionSource,state, viewModel = viewModel,navController)
+            LLMDisplay(interactionSource,state, viewModel = viewModel)
         }
     }
 
 }
 
 @Composable
-fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel,navController: NavController)
+fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel)
 {
     val gradient = Brush.linearGradient(
         listOf(Color(0XFFFEE990),Color(0xFFF2D660))
@@ -127,15 +122,20 @@ fun LLMDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
                     }.height(120.dp).width(120.dp)
             ) {
                 if(isPressed){
-                    if(!viewModel.tts.isSpeaking){
-                        var mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
-                        mediaPlayer.start() // no need to call prepare(); create() does that for you
+                    if (viewModel.checkConnectivity()){
+                        if(!viewModel.tts.isSpeaking){
+                            val mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
+                            mediaPlayer.start() // no need to call prepare(); create() does that for you
+                        }
+                        Image(painter = painterResource(id = R.drawable.mic2), "Mic"
+                            , modifier = Modifier.height(55.dp))
+                        viewModel.learnListen()
+                    }else{
+                        viewModel.speak("Make sure that WI-FI or mobile data is turned on, then try again")
                     }
-                    Icon(painter = painterResource(id = R.drawable.mic2), "Mic"
-                        , modifier = Modifier.height(55.dp))
-                    viewModel.learnListen()
+
                 }else{
-                    Icon(painter = painterResource(id = R.drawable.mic), "Mic"
+                    Image(painter = painterResource(id = R.drawable.mic), "Mic"
                         , modifier = Modifier.height(55.dp))
 
                     viewModel.speechRecognizer.stopListening()

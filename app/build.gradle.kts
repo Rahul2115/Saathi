@@ -71,7 +71,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     //implementation("androidx.compose.material3:material3")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.5")
-    implementation("com.google.ai.client.generativeai:generativeai:0.1.1")
+    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("androidx.compose.material3:material3-android:1.2.1")
     testImplementation("junit:junit:4.13.2")
@@ -112,7 +112,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("com.google.android.gms:play-services-auth-api-phone:18.0.2")
     implementation("com.google.android.play:integrity:1.3.0")
-
 }
 
 kapt {

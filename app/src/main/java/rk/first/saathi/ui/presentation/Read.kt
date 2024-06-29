@@ -3,6 +3,7 @@ package rk.first.saathi.ui.presentation
 import android.util.Log
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -62,13 +62,13 @@ fun Read(navController: NavController, state:State, viewModel: SaathiViewModel) 
                 .background(Color(0xFFFEE990)),
         )
         {
-            ReadDisplay(state, viewModel = viewModel,controller,navController)
+            ReadDisplay(state, viewModel = viewModel,controller)
         }
     }
 }
 
 @Composable
-fun ReadDisplay(state: State,viewModel: SaathiViewModel,controller:LifecycleCameraController,navController: NavController)
+fun ReadDisplay(state: State,viewModel: SaathiViewModel,controller:LifecycleCameraController)
 {
     val gradient = Brush.linearGradient(
         listOf(Color(0XFFFEE990),Color(0xFFF2D660))
@@ -113,7 +113,7 @@ fun ReadDisplay(state: State,viewModel: SaathiViewModel,controller:LifecycleCame
                     contentDescription = "Read click button. Double-tap to click the picture. swipe when speaking to stop"
                 }
             ) {
-                Icon(painter = painterResource(id = R.drawable.cam), "Click picture"
+                Image(painter = painterResource(id = R.drawable.cam), "Click picture"
                     , modifier = Modifier.height(60.dp))
             }
         }

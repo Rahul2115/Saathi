@@ -43,7 +43,7 @@ fun Navigation(viewModel: SaathiViewModel) {
             LOOK(navController = navController, uiState, viewModel)
         }
         composable(route = Screen.Setting.route){
-            Setting(navController = navController,viewModel,uiState)
+            Setting(navController = navController,viewModel)
         }
         composable(route = Screen.Read.route){
             Read(navController = navController,uiState,viewModel)

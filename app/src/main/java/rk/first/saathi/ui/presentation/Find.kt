@@ -4,6 +4,7 @@ import android.media.MediaPlayer
 import android.util.Log
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -17,8 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,9 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import rk.first.saathi.R
-import rk.first.saathi.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun Find(navController: NavController,state:State,viewModel: SaathiViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -58,13 +56,13 @@ fun Find(navController: NavController,state:State,viewModel: SaathiViewModel) {
                 .background(Color(0xFFFEE990)),
         )
         {
-            OcrDisplay(interactionSource,state, viewModel = viewModel,navController)
+            OcrDisplay(interactionSource,state, viewModel = viewModel)
         }
     }
 }
 
 @Composable
-fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel,navController: NavController)
+fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewModel: SaathiViewModel)
 {
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -140,14 +138,14 @@ fun OcrDisplay(interactionSource: MutableInteractionSource,state: State,viewMode
             ) {
                 if(isPressed){
                     if(!viewModel.tts.isSpeaking){
-                        var mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
+                        val mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.click)
                         mediaPlayer.start() // no need to call prepare(); create() does that for you
                     }
-                    Icon(painter = painterResource(id = R.drawable.mic2), "Mic"
+                    Image(painter = painterResource(id = R.drawable.mic2), "Mic"
                         , modifier = Modifier.height(55.dp))
                     viewModel.findListen()
                 }else{
-                    Icon(painter = painterResource(id = R.drawable.mic), "Mic"
+                    Image(painter = painterResource(id = R.drawable.mic), "Mic"
                         , modifier = Modifier.height(55.dp))
                     viewModel.speechRecognizer.stopListening()
                 }
